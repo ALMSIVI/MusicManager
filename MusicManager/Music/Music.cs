@@ -5,26 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using NAudio;
 using NAudio.Wave;
+using TagLib;
 
 namespace MusicManager.Music {
   public abstract class Music {
     /* Basic Information, will vary from different format */
-    private string Title; // 0
-    private int TrackNo; // 1
-    private string Artist; // 2
-    private string Album; // 3
-    private string Genre; // 4
-    private int Year; // 5
-    private string Comment; // 6
+    private string title; // 0
+    private int trackNo; // 1
+    private string artist; // 2
+    private string album; // 3
+    private string genre; // 4
+    private int year; // 5
+    private string comment; // 6
 
     /* Encoding Information */
-    private string Encoding; // 7
-    private int Channel; // 8
-    private int Frequency; // 9
-    private int Bit; // 10
-    private int Rate; // 11
-    private long Length; // 12: In milliseconds
-    private int Gain; // 13
+    private string encoding; // 7
+    private int channel; // 8
+    private int frequency; // 9
+    private int bit; // 10
+    private int rate; // 11
+    private long length; // 12: In milliseconds
+    private int gain; // 13
 
 
     /* Methods */
