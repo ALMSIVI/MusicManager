@@ -76,7 +76,7 @@
 				<Slider x:Name = "VolumeSlider" Grid.Column = "4" VerticalAlignment = "Center" />
 			</Grid>
 
-			<ListBox AllowDrop="True" SelectionMode="Extended" Grid.Row = "2">
+			<ListBox x:Name ="Playlist" AllowDrop="True" Drop ="MusicDrop" SelectionMode="Extended" Grid.Row = "2">
 				<ListBoxItem x:Name = "DefaultItem" Content="Drag or Open..." />
 			</ListBox>
 
@@ -91,153 +91,181 @@
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 
-			<Button x:Name = "AddOpen" Grid.Column = "0">Open / Add</Button>
-			<Button x:Name = "Delete" Grid.Column = "1">Delete</Button>
+			<Button x:Name = "AddOpen" Grid.Column = "0" Click="MusicOpen">Open / Add</Button>
+			<Button x:Name = "Delete" Grid.Column = "1" Click="ButtonClicked">Delete</Button>
 		</Grid>
 
 		<!-- The place to display tags and read options: 500 x 400 -->
 		<Grid x:Name = "Properties" Grid.Column="1" Grid.Row = "0">
 			<Grid.RowDefinitions>
-				<RowDefinition/>
-				<RowDefinition/>
-				<RowDefinition/>
-				<RowDefinition/>
-				<RowDefinition Height="120"/>
-				<RowDefinition/>
-				<RowDefinition/>
-				<RowDefinition/>
-				<RowDefinition/>
+				<RowDefinition Height="300" />
+				<RowDefinition />
 			</Grid.RowDefinitions>
 
-			<DockPanel Grid.Row="0">
-				<TextBlock DockPanel.Dock="Left" Width="40" TextAlignment="Center" VerticalAlignment="Center">Title</TextBlock>
-				<TextBox  DockPanel.Dock="Right" Margin="10" VerticalAlignment="Center"/>
-			</DockPanel>
+			<GroupBox x:Name="Tag" Grid.Row="0" Header="Tag" Margin="5 5 5 0">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition/>
+						<RowDefinition/>
+						<RowDefinition/>
+						<RowDefinition/>
+						<RowDefinition Height="100" />
+					</Grid.RowDefinitions>
 
-			<DockPanel Grid.Row="1">
-				<TextBlock DockPanel.Dock="Left" Width="50" TextAlignment="Center" VerticalAlignment="Center">Album</TextBlock>
-				<TextBox  DockPanel.Dock="Right" Margin="10" VerticalAlignment="Center"/>
-			</DockPanel>
+					<DockPanel Grid.Row="0">
+						<TextBlock DockPanel.Dock="Left" Width="40" TextAlignment="Center" VerticalAlignment="Center">Title</TextBlock>
+						<TextBox x:Name ="Title" IsEnabled="False" DockPanel.Dock="Right" Margin="10" VerticalAlignment="Center"/>
+					</DockPanel>
 
-			<Grid Grid.Row="2">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="300"/>
-					<ColumnDefinition Width="*"/>
-				</Grid.ColumnDefinitions>
+					<DockPanel Grid.Row="1">
+						<TextBlock DockPanel.Dock="Left" Width="50" TextAlignment="Center" VerticalAlignment="Center">Album</TextBlock>
+						<TextBox x:Name ="Album" IsEnabled="False" DockPanel.Dock="Right" Margin="10" VerticalAlignment="Center"/>
+					</DockPanel>
 
-				<DockPanel Grid.Column="0">
-					<TextBlock DockPanel.Dock="Left" Width="50" TextAlignment="Center" VerticalAlignment="Center">Artist</TextBlock>
-					<TextBox  DockPanel.Dock="Right" Margin="5" VerticalAlignment="Center"/>
-				</DockPanel>
+					<Grid Grid.Row="2">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="280"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
 
-				<DockPanel Grid.Column="1">
-					<TextBlock DockPanel.Dock="Left" Width="40" TextAlignment="Center" VerticalAlignment="Center">Track</TextBlock>
-					<TextBox  DockPanel.Dock="Right" Margin="5 10 10 10" VerticalAlignment="Center"/>
-				</DockPanel>
-			</Grid>
+						<DockPanel Grid.Column="0">
+							<TextBlock DockPanel.Dock="Left" Width="50" TextAlignment="Center" VerticalAlignment="Center">Artist</TextBlock>
+							<TextBox x:Name ="Artist" IsEnabled="False" DockPanel.Dock="Right" Margin="5" VerticalAlignment="Center"/>
+						</DockPanel>
 
-			<Grid Grid.Row="3">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="250"/>
-					<ColumnDefinition Width="*"/>
-				</Grid.ColumnDefinitions>
+						<DockPanel Grid.Column="1">
+							<TextBlock DockPanel.Dock="Left" Width="40" TextAlignment="Center" VerticalAlignment="Center">Track</TextBlock>
+							<TextBox x:Name ="Track" IsEnabled="False" DockPanel.Dock="Right" Margin="10" VerticalAlignment="Center"/>
+						</DockPanel>
+					</Grid>
 
-				<DockPanel Grid.Column="0">
-					<TextBlock DockPanel.Dock="Left" Width="50" TextAlignment="Center" VerticalAlignment="Center">Genre</TextBlock>
-					<TextBox  DockPanel.Dock="Right" Margin="5" VerticalAlignment="Center"/>
-				</DockPanel>
+					<Grid Grid.Row="3">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="250"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
 
-				<DockPanel Grid.Column="1">
-					<TextBlock DockPanel.Dock="Left" Width="40" TextAlignment="Center" VerticalAlignment="Center">Year</TextBlock>
-					<TextBox  DockPanel.Dock="Right" Margin="5 10 10 10" VerticalAlignment="Center"/>
-				</DockPanel>
-			</Grid>
+						<DockPanel Grid.Column="0">
+							<TextBlock DockPanel.Dock="Left" Width="50" TextAlignment="Center" VerticalAlignment="Center">Genre</TextBlock>
+							<TextBox x:Name ="Genre" IsEnabled="False" DockPanel.Dock="Right" Margin="5" VerticalAlignment="Center"/>
+						</DockPanel>
 
-			<DockPanel Grid.Row="4">
-				<TextBlock DockPanel.Dock="Left" Width="70" Margin="0 15 0 0" TextAlignment="Center" VerticalAlignment="Top">Comment</TextBlock>
-				<TextBox  DockPanel.Dock="Right" Margin="10 15 10 15" VerticalAlignment="Stretch"/>
-			</DockPanel>
+						<DockPanel Grid.Column="1">
+							<TextBlock DockPanel.Dock="Left" Width="40" TextAlignment="Center" VerticalAlignment="Center">Year</TextBlock>
+							<TextBox x:Name ="Year" IsEnabled="False" DockPanel.Dock="Right" Margin="5 10 10 10" VerticalAlignment="Center"/>
+						</DockPanel>
+					</Grid>
 
-			<DockPanel Grid.Row="5">
-				<TextBlock DockPanel.Dock="Left" Width="120" TextAlignment="Center" VerticalAlignment="Center">Read Type Priority</TextBlock>
-				<ComboBox DockPanel.Dock="Right" Margin="10" VerticalAlignment="Center">
-					<ComboBoxItem IsSelected="True">APEv2 > ID3v2 > ID3v1</ComboBoxItem>
-					<ComboBoxItem>ID3v2 > APEv2 > ID3v1</ComboBoxItem>
-					<ComboBoxItem>ID3v1 > ID3v2 > APEv2</ComboBoxItem>
-					<ComboBoxItem>ID3v1 > APEv2 > ID3v2</ComboBoxItem>
-				</ComboBox>
-			</DockPanel>
+					<DockPanel Grid.Row="4">
+						<TextBlock DockPanel.Dock="Left" Width="70" Margin="0 15 0 0" TextAlignment="Center" VerticalAlignment="Top">Comment</TextBlock>
+						<TextBox x:Name ="Comment" IsEnabled="False" DockPanel.Dock="Right" Margin="10 15 10 15" VerticalAlignment="Stretch"/>
+					</DockPanel>
 
-			<DockPanel Grid.Row="6">
-				<TextBlock DockPanel.Dock="Left" Width="130" TextAlignment="Center" VerticalAlignment="Center">ID3v2 Encoding Type</TextBlock>
-				<ComboBox DockPanel.Dock="Right" Margin="10" VerticalAlignment="Center">
-					<ComboBoxItem IsSelected="True">ISO-8859-1</ComboBoxItem>
-					<ComboBoxItem>UTF-16</ComboBoxItem>
-					<ComboBoxItem>UTF-8</ComboBoxItem>
-				</ComboBox>
-			</DockPanel>
+				</Grid>
+			</GroupBox>
 
-			<DockPanel Grid.Row="7">
-				<TextBlock DockPanel.Dock="Left" Width="80" TextAlignment="Center" VerticalAlignment="Center">Write Type</TextBlock>
-				<ComboBox  DockPanel.Dock="Right" Margin="10" VerticalAlignment="Center">
-					<ComboBoxItem>ID3v1</ComboBoxItem>
-					<ComboBoxItem>ID3v2</ComboBoxItem>
-					<ComboBoxItem>APEv2</ComboBoxItem>
-					<ComboBoxItem IsSelected="True">ID3v1 &amp; ID3v2</ComboBoxItem>
-					<ComboBoxItem>ID3v1 &amp; APEv2</ComboBoxItem>
-					<ComboBoxItem>ID3v2 &amp; APEv2</ComboBoxItem>
-				</ComboBox>
-			</DockPanel>
+			<GroupBox x:Name="Options" Grid.Row="1" Header="Options" Margin="5 0 5 5">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition/>
+						<RowDefinition/>
+						<RowDefinition/>
+						<RowDefinition/>
+					</Grid.RowDefinitions>
 
-			<CheckBox Grid.Row="8" IsChecked="True" VerticalAlignment="Center" Margin="10">Fill Data when writing ID3v2</CheckBox>
+					<DockPanel Grid.Row="0">
+						<TextBlock DockPanel.Dock="Left" Width="120" TextAlignment="Center" VerticalAlignment="Center">Read Type Priority</TextBlock>
+						<ComboBox DockPanel.Dock="Right" Margin="10 0 10 0" VerticalAlignment="Center" SelectionChanged="PriorityChanged">
+							<ComboBoxItem IsSelected="True">APEv2 > ID3v2 > ID3v1</ComboBoxItem>
+							<ComboBoxItem>ID3v2 > APEv2 > ID3v1</ComboBoxItem>
+							<ComboBoxItem>ID3v1 > ID3v2 > APEv2</ComboBoxItem>
+							<ComboBoxItem>ID3v1 > APEv2 > ID3v2</ComboBoxItem>
+						</ComboBox>
+					</DockPanel>
 
+					<DockPanel Grid.Row="1">
+						<TextBlock DockPanel.Dock="Left" Width="130" TextAlignment="Center" VerticalAlignment="Center">ID3v2 Encoding Type</TextBlock>
+						<ComboBox DockPanel.Dock="Right" Margin="10 0 10 0" VerticalAlignment="Center">
+							<ComboBoxItem IsSelected="True">ISO-8859-1</ComboBoxItem>
+							<ComboBoxItem>UTF-16</ComboBoxItem>
+							<ComboBoxItem>UTF-8</ComboBoxItem>
+						</ComboBox>
+					</DockPanel>
+
+					<DockPanel Grid.Row="2">
+						<TextBlock DockPanel.Dock="Left" Width="80" TextAlignment="Center" VerticalAlignment="Center">Write Type</TextBlock>
+						<ComboBox DockPanel.Dock="Right" Margin="10 0 10 0" VerticalAlignment="Center">
+							<ComboBoxItem>ID3v1</ComboBoxItem>
+							<ComboBoxItem>ID3v2</ComboBoxItem>
+							<ComboBoxItem>APEv2</ComboBoxItem>
+							<ComboBoxItem IsSelected="True">ID3v1 &amp; ID3v2</ComboBoxItem>
+							<ComboBoxItem>ID3v1 &amp; APEv2</ComboBoxItem>
+							<ComboBoxItem>ID3v2 &amp; APEv2</ComboBoxItem>
+						</ComboBox>
+					</DockPanel>
+
+					<CheckBox Grid.Row="3" IsChecked="True" Checked="CheckPadding" Unchecked="UncheckPadding" VerticalAlignment="Center" Margin="10">Enable data padding when writing ID3v2</CheckBox>
+				</Grid>
+			</GroupBox>
+			
 			<Border BorderThickness="1" BorderBrush="Black" Grid.RowSpan="9"/>
 		</Grid>
 
 
 		<!-- The place to display cover art and streaming information -->
-		<Grid x:Name = "Art" Grid.Column="2" Grid.Row = "0">
+		<Grid Grid.Column="2" Grid.Row = "0">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="200"/>
-				<RowDefinition Height="40"/>
-				<RowDefinition/>
-				<RowDefinition/>
-				<RowDefinition/>
-				<RowDefinition/>
-				<RowDefinition/>
-				<RowDefinition/>
+				<RowDefinition Height="240"/>
 				<RowDefinition/>
 			</Grid.RowDefinitions>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition/>
-				<ColumnDefinition/>
-			</Grid.ColumnDefinitions>
 
-			<Image x:Name="CoverArt" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" />
-			<Button x:Name="Choose" Grid.Row="1" Grid.Column="0">Choose Art</Button>
-			<Button x:Name="DelArt" Grid.Row="1" Grid.Column="1">Delete Art</Button>
+			<!-- Art -->
+			<StackPanel Grid.Row="0">
+				<Image x:Name="CoverArt" Height="200" AllowDrop="True" Drop="CoverArtDrop"/>
+				<UniformGrid x:Name="Art" IsEnabled="False" Rows="1" Columns="2" Height="40">
+					<Button x:Name="Choose" Click="ImageOpen">Choose Art</Button>
+					<Button x:Name="DelArt">Delete Art</Button>
+				</UniformGrid>
+			</StackPanel>
 
-			<TextBlock Grid.Row="2" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Encoding</TextBlock>
-			<TextBlock Grid.Row="3" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Channel</TextBlock>
-			<TextBlock Grid.Row="4" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Frequency</TextBlock>
-			<TextBlock Grid.Row="5" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Bit</TextBlock>
-			<TextBlock Grid.Row="6" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Rate</TextBlock>
-			<TextBlock Grid.Row="7" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Length</TextBlock>
-			<TextBlock Grid.Row="8" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Gain</TextBlock>
+			<!-- Streaming -->
+			<Grid IsEnabled="False" Grid.Row="1">
+				<Grid.RowDefinitions>
+					<RowDefinition/>
+					<RowDefinition/>
+					<RowDefinition/>
+					<RowDefinition/>
+					<RowDefinition/>
+					<RowDefinition/>
+					<RowDefinition/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+				
+				<TextBlock Grid.Row="0" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Encoding</TextBlock>
+				<TextBlock Grid.Row="1" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Channel</TextBlock>
+				<TextBlock Grid.Row="2" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Frequency</TextBlock>
+				<TextBlock Grid.Row="3" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Bit</TextBlock>
+				<TextBlock Grid.Row="4" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Rate</TextBlock>
+				<TextBlock Grid.Row="5" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Length</TextBlock>
+				<TextBlock Grid.Row="6" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Gain</TextBlock>
 
-			<TextBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="False" Margin="5"/>
-			<TextBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="False" Margin="5"/>
-			<TextBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="False" Margin="5"/>
-			<TextBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="False" Margin="5"/>
-			<TextBox Grid.Row="6" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="False" Margin="5"/>
-			<TextBox Grid.Row="7" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="False" Margin="5"/>
-			<TextBox Grid.Row="8" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsEnabled="False" Margin="5"/>
+				<TextBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+				<TextBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+				<TextBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+				<TextBox Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+				<TextBox Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+				<TextBox x:Name ="Length" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+				<TextBox Grid.Row="6" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5"/>
+			</Grid>
 
 			<Border BorderThickness="1" BorderBrush="Black" Grid.RowSpan="9" Grid.ColumnSpan="2"/>
 		</Grid>
 
 		<!-- Buttons at the Property part -->
-		<Grid Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1">
+		<Grid x:Name="SongOptions" IsEnabled="False" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition/>
 				<ColumnDefinition/>
@@ -250,10 +278,9 @@
 			<Button x:Name = "Former" Grid.Column="0">Previous Song</Button>
 			<Button x:Name = "Latter" Grid.Column="1">Next Song</Button>
 			<Button x:Name = "Reread" Grid.Column="2">Reread Song</Button>
-			<Button x:Name = "More" Grid.Column="3">More Info</Button>
-			<Button x:Name = "Edit" Grid.Column="4">Edit Info</Button> <!-- Can be changed to Save info -->
+			<Button x:Name = "More" Grid.Column="3" Click="ButtonClicked">More Info</Button>
+			<Button x:Name = "Edit" Click='ButtonClicked' Grid.Column="4">Edit Info</Button> <!-- Can be changed to Save info -->
 			<Button x:Name = "Convert" Grid.Column="5" Click="ButtonClicked">Convert</Button>
-
 		</Grid>
 
 	</Grid>
