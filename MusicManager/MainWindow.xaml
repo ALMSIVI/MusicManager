@@ -31,30 +31,48 @@
 		</Style>
 	</Window.Resources>
 
+	<Window.CommandBindings>
+		<CommandBinding Command="ApplicationCommands.Open" Executed="OpenExecuted" />
+		<CommandBinding Command="ApplicationCommands.Delete" Executed="DeleteExecuted" />
+	</Window.CommandBindings>
 
-	<Grid >
+	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width= "360" />
-			<ColumnDefinition Width = "*" />
-			<ColumnDefinition Width = "200" />
+			<ColumnDefinition/>
+			<ColumnDefinition Width="200" />
 		</Grid.ColumnDefinitions>
 
 		<Grid.RowDefinitions>
-			<RowDefinition Height = "*" />
-			<RowDefinition Height = "40" />
+			<RowDefinition/>
+			<RowDefinition Height="40" />
 		</Grid.RowDefinitions>
+		
 		<!-- The place to control music play, open / drag music to list -->
-
 		<Grid Grid.Column="0" Grid.Row = "0">
 
 			<Grid.RowDefinitions>
-				<RowDefinition Height = "60" />
-				<RowDefinition Height = "Auto" />
-				<RowDefinition Height = "*" />
+				<RowDefinition Height="50" />
+				<RowDefinition Height="60" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition/>
 			</Grid.RowDefinitions>
-			<Slider Grid.Row = "0" x:Name = "progressSlider" VerticalAlignment = "Center"></Slider>
+
+			<Border Grid.Row="0" BorderBrush="Black" BorderThickness="0 0 0 1">
+				<TextBlock FontSize="30" Margin="10 5 0 5">MusicManager</TextBlock>
+			</Border>
+
+			<Border Grid.Row="1" BorderBrush="Black" BorderThickness="0 0 0 1">
+				<DockPanel>
+					<TextBlock DockPanel.Dock="Right" FontSize="30" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 0 5 0">00:00</TextBlock>
+					<Slider x:Name = "progressSlider" Margin="10 0 0 0"
+							VerticalAlignment = "Center" HorizontalAlignment="Stretch"/>
+				</DockPanel>
+			</Border>
+
+			
 			<!-- Play buttons -->
-			<Grid Grid.Row = "1">
+			<Grid Grid.Row="2">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width = "60" />
 					<ColumnDefinition Width = "80" />
@@ -63,24 +81,24 @@
 					<ColumnDefinition Width = "*" />
 				</Grid.ColumnDefinitions>
 
-				<Button x:Name = "btnPrev" Grid.Column = "0" Style="{DynamicResource EmptyButtonStyle}">
+				<Button x:Name = "btnPrev" Grid.Column = "0" Margin="10 0 0 0" Style="{DynamicResource EmptyButtonStyle}">
 					<Image Source = "pack://application:,,,/MusicManager;component/Icons/back.png" />
 				</Button>
-				<Button x:Name = "btnPlay" Grid.Column = "1" Style="{DynamicResource EmptyButtonStyle}">
+				<Button x:Name = "btnPlay" Grid.Column = "1" Margin="5" Style="{DynamicResource EmptyButtonStyle}">
 					<Image Source = "pack://application:,,,/MusicManager;component/Icons/play-button.png" />
 				</Button>
-				<Button x:Name = "btnNext" Grid.Column = "2" Style="{DynamicResource EmptyButtonStyle}">
+				<Button x:Name = "btnNext" Grid.Column = "2" Margin="0 0 10 0" Style="{DynamicResource EmptyButtonStyle}">
 					<Image Source = "pack://application:,,,/MusicManager;component/Icons/next.png" />
 				</Button>
-				<Image x:Name = "btnVolume" Grid.Column = "3" Source="/MusicManager;component/Icons/speaker.png" />
-				<Slider x:Name = "volumeSlider" Grid.Column = "4" VerticalAlignment = "Center" />
+				<Image x:Name = "btnVolume" Grid.Column = "3" Margin="5 0 10 0" Source="/MusicManager;component/Icons/speaker.png" />
+				<Slider x:Name = "volumeSlider" Grid.Column = "4" VerticalAlignment = "Center" Margin="0 0 5 0" />
 			</Grid>
 
-			<ListBox x:Name ="playlist" AllowDrop="True" Drop ="MusicDrop" SelectionMode="Extended" Grid.Row = "2">
+			<ListBox x:Name ="playlist" AllowDrop="True" Drop ="MusicDrop" SelectionMode="Extended" Grid.Row = "3">
 				<ListBoxItem x:Name = "defaultItem" Content="Drag or Open..." />
 			</ListBox>
 
-			<Border BorderThickness="1" BorderBrush="Black" Grid.RowSpan="3"/>
+			<Border BorderThickness="0 0 1 0" BorderBrush="Black" Grid.RowSpan="4"/>
 		</Grid>
 
 
@@ -91,18 +109,44 @@
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 
-			<Button x:Name = "btnAddOpen" Grid.Column = "0" Click="MusicOpen">Open / Add</Button>
-			<Button x:Name = "btnDelete" Grid.Column = "1" Click="ButtonClicked">Delete</Button>
+			<Button Grid.Column = "0" Command="ApplicationCommands.Open">Open / Add</Button>
+			<Button Grid.Column = "1" Command="ApplicationCommands.Delete">Delete</Button>
 		</Grid>
 
 		<!-- The place to display tags and read options: 500 x 400 -->
 		<Grid Grid.Column="1" Grid.Row = "0">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="300" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
 				<RowDefinition />
 			</Grid.RowDefinitions>
 
-			<GroupBox x:Name="gridTag" Grid.Row="0" Header="Tag" Margin="5 5 5 0">
+			<Grid.Resources>
+				<Style TargetType="TextBlock">
+					<Setter Property="Margin" Value="10 5 0 5"/>
+					<Setter Property="VerticalAlignment" Value="Center"/>
+				</Style>
+				
+				<Style TargetType="TextBox">
+					<Setter Property="Margin" Value="10 5 10 5"/>
+					<Setter Property="VerticalAlignment" Value="Center"/>
+				</Style>
+				
+				<Style TargetType="ComboBox">
+					<Setter Property="Margin" Value="5"/>
+					<Setter Property="VerticalAlignment" Value="Center"/>
+				</Style>
+			</Grid.Resources>
+			
+			<GroupBox x:Name="gridFile" Grid.Row="0" Header="File" Margin="5">
+				<DockPanel>
+					<TextBlock DockPanel.Dock="Left">Filename</TextBlock>
+					<Button DockPanel.Dock="Right" Margin="10 5 10 5">Guess tag from filename</Button>
+					<TextBox IsEnabled="False"/>
+				</DockPanel>
+			</GroupBox>
+
+			<GroupBox x:Name="gridTag" Grid.Row="1" Header="Tag" Margin="5 0 5 5">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition/>
@@ -113,13 +157,13 @@
 					</Grid.RowDefinitions>
 
 					<DockPanel Grid.Row="0">
-						<TextBlock DockPanel.Dock="Left" Width="40" TextAlignment="Center" VerticalAlignment="Center">Title</TextBlock>
-						<TextBox x:Name ="txtTitle" IsEnabled="False" DockPanel.Dock="Right" Margin="10" VerticalAlignment="Center"/>
+						<TextBlock DockPanel.Dock="Left">Title</TextBlock>
+						<TextBox x:Name ="txtTitle" DockPanel.Dock="Right"/>
 					</DockPanel>
 
 					<DockPanel Grid.Row="1">
-						<TextBlock DockPanel.Dock="Left" Width="50" TextAlignment="Center" VerticalAlignment="Center">Album</TextBlock>
-						<TextBox x:Name ="txtAlbum" IsEnabled="False" DockPanel.Dock="Right" Margin="10" VerticalAlignment="Center"/>
+						<TextBlock DockPanel.Dock="Left" TextAlignment="Left">Album</TextBlock>
+						<TextBox x:Name ="txtAlbum" DockPanel.Dock="Right"/>
 					</DockPanel>
 
 					<Grid Grid.Row="2">
@@ -129,13 +173,13 @@
 						</Grid.ColumnDefinitions>
 
 						<DockPanel Grid.Column="0">
-							<TextBlock DockPanel.Dock="Left" Width="50" TextAlignment="Center" VerticalAlignment="Center">Artist</TextBlock>
-							<TextBox x:Name ="txtArtist" IsEnabled="False" DockPanel.Dock="Right" Margin="5" VerticalAlignment="Center"/>
+							<TextBlock DockPanel.Dock="Left">Artist</TextBlock>
+							<TextBox x:Name ="txtArtist" DockPanel.Dock="Right"/>
 						</DockPanel>
 
 						<DockPanel Grid.Column="1">
-							<TextBlock DockPanel.Dock="Left" Width="40" TextAlignment="Center" VerticalAlignment="Center">Track</TextBlock>
-							<TextBox x:Name ="txtTrack" IsEnabled="False" DockPanel.Dock="Right" Margin="10" VerticalAlignment="Center"/>
+							<TextBlock DockPanel.Dock="Left">Track</TextBlock>
+							<TextBox x:Name ="txtTrack" DockPanel.Dock="Right"/>
 						</DockPanel>
 					</Grid>
 
@@ -146,26 +190,25 @@
 						</Grid.ColumnDefinitions>
 
 						<DockPanel Grid.Column="0">
-							<TextBlock DockPanel.Dock="Left" Width="50" TextAlignment="Center" VerticalAlignment="Center">Genre</TextBlock>
-							<TextBox x:Name ="txtGenre" IsEnabled="False" DockPanel.Dock="Right" Margin="5" VerticalAlignment="Center"/>
+							<TextBlock DockPanel.Dock="Left">Genre</TextBlock>
+							<TextBox x:Name ="txtGenre" DockPanel.Dock="Right"/>
 						</DockPanel>
 
 						<DockPanel Grid.Column="1">
-							<TextBlock DockPanel.Dock="Left" Width="40" TextAlignment="Center" VerticalAlignment="Center">Year</TextBlock>
-							<TextBox x:Name ="txtYear" IsEnabled="False" DockPanel.Dock="Right" Margin="5 10 10 10" VerticalAlignment="Center"/>
+							<TextBlock DockPanel.Dock="Left">Year</TextBlock>
+							<TextBox x:Name ="txtYear" DockPanel.Dock="Right"/>
 						</DockPanel>
 					</Grid>
 
 					<DockPanel Grid.Row="4">
-						<TextBlock DockPanel.Dock="Left" Width="70" Margin="0 15 0 0" TextAlignment="Center" VerticalAlignment="Top">Comment</TextBlock>
-						<TextBox x:Name ="txtComment" IsEnabled="False" DockPanel.Dock="Right" Margin="10 15 10 15" VerticalAlignment="Stretch"/>
+						<TextBlock DockPanel.Dock="Left" VerticalAlignment="Top" Margin="10 10 5 5">Comment</TextBlock>
+						<TextBox x:Name ="txtComment" DockPanel.Dock="Right" VerticalAlignment="Stretch" Margin="10"/>
 					</DockPanel>
-
 				</Grid>
 			</GroupBox>
 
 			<!-- Options -->
-			<GroupBox Grid.Row="1" Header="Options" Margin="5 0 5 5">
+			<GroupBox Grid.Row="2" Header="Options" Margin="5 0 5 5">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition/>
@@ -175,8 +218,8 @@
 					</Grid.RowDefinitions>
 
 					<DockPanel Grid.Row="0">
-						<TextBlock DockPanel.Dock="Left" Width="120" TextAlignment="Center" VerticalAlignment="Center">Read Type Priority</TextBlock>
-						<ComboBox x:Name="cbxPriority" DockPanel.Dock="Right" Margin="10 0 10 0" VerticalAlignment="Center">
+						<TextBlock DockPanel.Dock="Left">Read Type Priority</TextBlock>
+						<ComboBox x:Name="cbxPriority" DockPanel.Dock="Right">
 							<ComboBoxItem IsSelected="True">APEv2 > ID3v2 > ID3v1</ComboBoxItem>
 							<ComboBoxItem>ID3v2 > APEv2 > ID3v1</ComboBoxItem>
 							<ComboBoxItem>ID3v1 > ID3v2 > APEv2</ComboBoxItem>
@@ -185,8 +228,8 @@
 					</DockPanel>
 
 					<DockPanel Grid.Row="1">
-						<TextBlock DockPanel.Dock="Left" Width="130" TextAlignment="Center" VerticalAlignment="Center">ID3v2 Encoding Type</TextBlock>
-						<ComboBox x:Name="cbxType" DockPanel.Dock="Right" Margin="10 0 10 0" VerticalAlignment="Center">
+						<TextBlock DockPanel.Dock="Left">ID3v2 Encoding Type</TextBlock>
+						<ComboBox x:Name="cbxType" DockPanel.Dock="Right">
 							<ComboBoxItem IsSelected="True">ISO-8859-1</ComboBoxItem>
 							<ComboBoxItem>UTF-16</ComboBoxItem>
 							<ComboBoxItem>UTF-8</ComboBoxItem>
@@ -194,8 +237,8 @@
 					</DockPanel>
 
 					<DockPanel Grid.Row="2">
-						<TextBlock DockPanel.Dock="Left" Width="80" TextAlignment="Center" VerticalAlignment="Center">Write Type</TextBlock>
-						<ComboBox x:Name="cbxWrite" DockPanel.Dock="Right" Margin="10 0 10 0" VerticalAlignment="Center">
+						<TextBlock DockPanel.Dock="Left">Write Type</TextBlock>
+						<ComboBox x:Name="cbxWrite" DockPanel.Dock="Right">
 							<ComboBoxItem>ID3v1</ComboBoxItem>
 							<ComboBoxItem>ID3v2</ComboBoxItem>
 							<ComboBoxItem>APEv2</ComboBoxItem>
@@ -209,7 +252,7 @@
 				</Grid>
 			</GroupBox>
 			
-			<Border BorderThickness="1" BorderBrush="Black" Grid.RowSpan="9"/>
+			<Border BorderThickness="0 0 1 0" BorderBrush="Black" Grid.RowSpan="9"/>
 		</Grid>
 
 
@@ -244,7 +287,7 @@
 					<ColumnDefinition/>
 					<ColumnDefinition/>
 				</Grid.ColumnDefinitions>
-				
+
 				<TextBlock Grid.Row="0" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Encoding</TextBlock>
 				<TextBlock Grid.Row="1" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Channel</TextBlock>
 				<TextBlock Grid.Row="2" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Frequency</TextBlock>
@@ -261,8 +304,6 @@
 				<TextBox x:Name ="txtLength" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10 5 10 5"/>
 				<TextBox x:Name="txtGain" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10 5 10 5"/>
 			</Grid>
-
-			<Border BorderThickness="1" BorderBrush="Black" Grid.RowSpan="9" Grid.ColumnSpan="2"/>
 		</Grid>
 
 		<!-- Buttons at the Property part -->
@@ -278,7 +319,7 @@
 
 			<Button x:Name = "btnFormer" Grid.Column="0">Previous Song</Button>
 			<Button x:Name = "btnLatter" Grid.Column="1">Next Song</Button>
-			<Button x:Name = "btnReread" Grid.Column="2">Reread Song</Button>
+			<Button x:Name = "btnReread" Grid.Column="2">Reload Song</Button>
 			<Button x:Name = "btnMore" Grid.Column="3" Click="ButtonClicked">More Info</Button>
 			<Button x:Name = "btnEdit" Click='ButtonClicked' Grid.Column="4">Edit Info</Button> <!-- Can be changed to Save info -->
 			<Button x:Name = "btnConvert" Grid.Column="5" Click="ButtonClicked">Convert</Button>

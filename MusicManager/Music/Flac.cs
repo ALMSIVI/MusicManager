@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace MusicManager.Music {
   class Flac : MusicFile {
 
-    public Flac(string musicName) : base(musicName) {
+    public Flac(string musicName, MainWindow windowController)
+      : base(musicName, windowController) {
     }
 
     public override void Play() {

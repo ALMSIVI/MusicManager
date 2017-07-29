@@ -64,7 +64,7 @@ namespace MusicManager {
         return cbxWrite.SelectedIndex;
       }
     }
-    
+
     /// <summary>
     /// Data padding when writing file. Default to true.
     /// </summary>
@@ -86,12 +86,10 @@ namespace MusicManager {
     /// <summary>
     /// Stores all filenames so that a file cannot be added to the list twice.
     /// </summary>
-    private HashSet<string> filenameSet;
+    private Dictionary<string, MusicFile> filenameSet;
 
     public MainWindow() {
       InitializeComponent();
-
-      // Initialize the options
 
       tagBoxes = new List<TextBox>(7);
       tagBoxes.Add(txtTitle);
@@ -111,7 +109,7 @@ namespace MusicManager {
       streamBoxes.Add(txtLength);
       streamBoxes.Add(txtGain);
 
-      filenameSet = new HashSet<string>();
+      filenameSet = new Dictionary<string, MusicFile>();
     }
 
     #region Events
@@ -126,17 +124,6 @@ namespace MusicManager {
         case "btnMore":
           MoreInfo moreInfoWindow = new MoreInfo();
           moreInfoWindow.Show();
-          break;
-
-        case "btnDelete":
-          playlist.Items.Remove(playlist.SelectedItems);
-          if (playlist.Items.IsEmpty) {
-            playlist.Items.Add(defaultItem);
-            SongOptions.IsEnabled = true;
-            CleanInfo();
-          } else {
-            UpdateInfo(playlist.Items.OfType<MusicFile>().ToList());
-          }
           break;
 
         case "btnEdit":
@@ -167,15 +154,6 @@ namespace MusicManager {
 
     }
 
-    private void MusicOpen(object sender, RoutedEventArgs e) {
-      OpenFileDialog musicDialog = new OpenFileDialog();
-      musicDialog.Multiselect = true;
-      //TODO: Filter and InitialDirectory, read from config file
-      if (musicDialog.ShowDialog() == true) { // opens
-        HandleOpen(musicDialog.FileNames);
-      }
-    }
-
     /// <summary>
     /// Opens image and sets as cover album.
     /// </summary>
@@ -196,46 +174,40 @@ namespace MusicManager {
     /// </summary>
     /// <param name="filenames">an array of music filenames</param>
     private void HandleOpen(string[] filenames) {
+      playlist.Items.Remove(defaultItem);
       List<MusicFile> musicList = new List<MusicFile>(filenames.Length);
       foreach (string filename in filenames) {
         /* Check repeated adding */
-        if (filenameSet.Contains(filename)) {
+        MusicFile music;
+        if (filenameSet.TryGetValue(filename, out music)) {
           // Logic: find added song in the list, add it to the list to be
           // updated
-          foreach (MusicFile musicFile in playlist.Items) {
-            if (musicFile.Filename.Equals(filename)) {
-              musicFile.UpdateTag();
-              musicList.Add(musicFile); // Add it to the update list
-              break;
-            }
-          }
-
-        }
-        else {
-          filenameSet.Add(filename);
+          music.UpdateTag();
+          musicList.Add(music);
+        } else {
           string extension = System.IO.Path.GetExtension(filename);
           if (extension.Equals(".cue")) {
             // TODO: CUE support (find a library)
+          } else if (extension.Equals(".mp3")) {
+            music = new Mp3(filename, this);
+            musicList.Add(music);
+            filenameSet.Add(filename, music);
           } else {
-            if (extension.Equals(".mp3")) {
-              musicList.Add(new Mp3(filename, this));
-            } else {
-              // music.Add(new Flac(filename));
-              // TODO: Other formats
-            }
+            // music.Add(new Flac(filename));
+            // TODO: Other formats
           }
         }
       }
 
-      bool canEdit = true;
-      if (musicList.Count != 0) {
+      bool canEdit = (musicList.Count != 0);
+      if (canEdit) {
         foreach (MusicFile file in musicList) {
+          //TODO: Resolve bug when adding duplicate items.
           playlist.Items.Add(file);
           if (file.ReadOnly == false) {
             canEdit = false;
           }
         }
-        playlist.Items.Remove(defaultItem);
       }
       UpdateInfo(musicList);
       if (canEdit) {
@@ -282,6 +254,40 @@ namespace MusicManager {
       }
       foreach (TextBox streamInfo in streamBoxes) {
         streamInfo.Clear();
+      }
+    }
+    #endregion
+
+    #region Commands
+    private void OpenExecuted(object target, ExecutedRoutedEventArgs e) {
+      OpenFileDialog musicDialog = new OpenFileDialog();
+      musicDialog.Multiselect = true;
+      //TODO: Filter and InitialDirectory, read from config file
+      if (musicDialog.ShowDialog() == true) { // opens
+        HandleOpen(musicDialog.FileNames);
+      }
+    }
+
+    private void DeleteExecuted(object target, ExecutedRoutedEventArgs e) {
+      if (!playlist.SelectedItems.Contains(defaultItem)) {
+        //var selectedItems = playlist.SelectedItems.Cast<MusicFile>().ToArray();
+        //foreach (MusicFile file in selectedItems) {
+        //  filenameSet.Remove(file.Filename);
+        //  playlist.Items.Remove(file);
+        //}
+
+        while (playlist.SelectedItems.Count != 0) {
+          filenameSet.Remove(((MusicFile)(playlist.SelectedItem)).Filename);
+          playlist.Items.Remove(playlist.SelectedItem);
+        }
+
+        if (playlist.Items.IsEmpty) {
+          playlist.Items.Add(defaultItem);
+          SongOptions.IsEnabled = false;
+          CleanInfo();
+        } else {
+          UpdateInfo(playlist.Items.OfType<MusicFile>().ToList());
+        }
       }
     }
     #endregion
