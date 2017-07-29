@@ -83,6 +83,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Utils\IniParser.cs" />
     <Page Include="ConversionParams.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

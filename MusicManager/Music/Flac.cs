@@ -10,7 +10,14 @@ namespace MusicManager.Music {
     public Flac(string musicName) : base(musicName) {
     }
 
-    public override void Play() { }
-    public override void Pause() { }
+    public override void Play() {
+      throw new NotImplementedException();
+    }
+    public override void Pause() {
+      throw new NotImplementedException();
+    }
+    public override void UpdateTag() {
+      throw new NotImplementedException();
+    }
   }
 }

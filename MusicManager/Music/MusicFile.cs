@@ -17,9 +17,10 @@ namespace MusicManager.Music {
     #endregion
 
     #region File
-    //protected string Filename { get; }
+    public string Filename { get; }
     protected File tagFile;
-    protected bool readOnly;
+    public bool ReadOnly { get; private set; }
+    protected MainWindow controller;
     #endregion
 
     #region Tag
@@ -47,15 +48,17 @@ namespace MusicManager.Music {
     /// Constructor of music
     /// </summary>
     /// <param name="musicName"></param>
-    public MusicFile(string musicName) {
-      //Filename = musicName;
+    public MusicFile(string musicName, MainWindow windowController) {
+      Filename = musicName;
       tagFile = File.Create(musicName);
-      readOnly = tagFile.Writeable;
+      ReadOnly = tagFile.Writeable;
       length = tagFile.Length;
+      controller = windowController;
     }
     #endregion
 
     #region Abstract methods
+    public abstract void UpdateTag();
     public abstract void Play();
     public abstract void Pause();
     #endregion

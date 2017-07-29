@@ -10,7 +10,26 @@ namespace MusicManager.Music {
   public class Mp3 : MusicFile {
     private delegate void LoadInfo();
 
-    public Mp3(string musicName, int priority) : base(musicName) {
+    public Mp3(string musicName, MainWindow windowController) :
+      base(musicName, windowController) {
+      UpdateTag();
+    }
+
+    /* Three tags for MP3 */
+    private void LoadId3V1() {
+      Tag tag = tagFile.GetTag(TagTypes.Id3v1);
+      title = tag.Title;
+      artist = String.Join(",", tag.Performers);
+      album = tag.Album;
+      year = tag.Year;
+      comment = tag.Comment;
+      trackNo = tag.Track;
+      genre = String.Join(",", tag.Genres);
+    }
+    private void LoadId3V2() { }
+    private void LoadApeV2() { }
+
+    public override void UpdateTag() {
       /// <see cref="readPriority"/>
       IDictionary<Int32, LoadInfo> loadInfo = new Dictionary<Int32, LoadInfo>();
       loadInfo[0] = delegate {
@@ -34,23 +53,8 @@ namespace MusicManager.Music {
         LoadId3V2();
       };
 
-      loadInfo[priority]();
+      loadInfo[controller.ReadPriority]();
     }
-
-    /* Three tags for MP3 */
-    private void LoadId3V1() {
-      Tag tag = tagFile.GetTag(TagTypes.Id3v1);
-      title = tag.Title;
-      artist = String.Join(",", tag.Performers);
-      album = tag.Album;
-      year = tag.Year;
-      comment = tag.Comment;
-      trackNo = tag.Track;
-      genre = String.Join(",", tag.Genres);
-    }
-    private void LoadId3V2() { }
-    private void LoadApeV2() { }
-
 
     public override void Pause() {
       throw new NotImplementedException();
