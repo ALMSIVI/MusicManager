@@ -39,6 +39,9 @@ namespace MusicManager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
+            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
+            "tring>.jpg</string>\r\n  <string>.png</string>\r\n</ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection SupportedImageFormats {
             get {
                 return ((global::System.Collections.Specialized.StringCollection)(this["SupportedImageFormats"]));
@@ -54,6 +57,102 @@ namespace MusicManager.Properties {
         public string SavedAddress {
             get {
                 return ((string)(this["SavedAddress"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Artist - Title")]
+        public string DisplayFormat {
+            get {
+                return ((string)(this["DisplayFormat"]));
+            }
+            set {
+                this["DisplayFormat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DefaultOpenAddress {
+            get {
+                return ((string)(this["DefaultOpenAddress"]));
+            }
+            set {
+                this["DefaultOpenAddress"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseSavedAddress {
+            get {
+                return ((bool)(this["UseSavedAddress"]));
+            }
+            set {
+                this["UseSavedAddress"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SavedPlace1 {
+            get {
+                return ((string)(this["SavedPlace1"]));
+            }
+            set {
+                this["SavedPlace1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SavedPlace2 {
+            get {
+                return ((string)(this["SavedPlace2"]));
+            }
+            set {
+                this["SavedPlace2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SavedPlace3 {
+            get {
+                return ((string)(this["SavedPlace3"]));
+            }
+            set {
+                this["SavedPlace3"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SavedPlace4 {
+            get {
+                return ((string)(this["SavedPlace4"]));
+            }
+            set {
+                this["SavedPlace4"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SavedPlace5 {
+            get {
+                return ((string)(this["SavedPlace5"]));
+            }
+            set {
+                this["SavedPlace5"] = value;
             }
         }
     }

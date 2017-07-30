@@ -1,22 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using NAudio;
-using NAudio.Wave;
-using System.IO;
-using MusicManager.Music;
 using Microsoft.Win32;
+
+using MusicManager.Music;
+
 
 namespace MusicManager {
   /// <summary>
@@ -75,42 +65,50 @@ namespace MusicManager {
     }
     #endregion
 
-    /// <summary>
-    /// Used to control all tag-related texts in the app.
-    /// </summary>
-    private List<TextBox> tagBoxes;
-    /// <summary>
-    /// Used to control all streaming-related texts in the app.
-    /// </summary>
-    private List<TextBox> streamBoxes;
+    #region StoredInfo
+    // TODO: use ConcurrentDictionary to enable multithreading
     /// <summary>
     /// Stores all filenames so that a file cannot be added to the list twice.
     /// </summary>
-    private Dictionary<string, MusicFile> filenameSet;
+    private Dictionary<string, MusicFile> filenames;
+    /// <summary>
+    /// Stores all the TextBox-TextValue pairs that represent the tag section.
+    /// </summary>
+    private Dictionary<TextBox, TextValue> tagValues;
+    /// <summary>
+    /// Stores all the TextBox-TextValue pairs that represent the file section.
+    /// </summary>
+    private Dictionary<TextBox, TextValue> streamValues;
+    #endregion
 
+    #region Constructor
     public MainWindow() {
       InitializeComponent();
 
-      tagBoxes = new List<TextBox>(7);
-      tagBoxes.Add(txtTitle);
-      tagBoxes.Add(txtAlbum);
-      tagBoxes.Add(txtArtist);
-      tagBoxes.Add(txtTrack);
-      tagBoxes.Add(txtGenre);
-      tagBoxes.Add(txtYear);
-      tagBoxes.Add(txtComment);
+      filenames = new Dictionary<string, MusicFile>();
 
-      streamBoxes = new List<TextBox>(7);
-      streamBoxes.Add(txtEncode);
-      streamBoxes.Add(txtChannel);
-      streamBoxes.Add(txtFrequency);
-      streamBoxes.Add(txtBit);
-      streamBoxes.Add(txtRate);
-      streamBoxes.Add(txtLength);
-      streamBoxes.Add(txtGain);
+      tagValues = new Dictionary<TextBox, TextValue> {
+        [txtTitle] = new TextValue(),
+        [txtAlbum] = new TextValue(),
+        [txtArtist] = new TextValue(),
+        [txtTrack] = new TextValue(),
+        [txtGenre] = new TextValue(),
+        [txtYear] = new TextValue(),
+        [txtComment] = new TextValue()
+      };
 
-      filenameSet = new Dictionary<string, MusicFile>();
+      streamValues = new Dictionary<TextBox, TextValue> {
+        [txtFilename] = new TextValue(),
+        [txtEncode] = new TextValue(),
+        [txtChannel] = new TextValue(),
+        [txtSampleRate] = new TextValue(),
+        [txtBits] = new TextValue(),
+        [txtBitRate] = new TextValue(),
+        [txtLength] = new TextValue(),
+        [txtGain] = new TextValue()
+      };
     }
+    #endregion
 
     #region Events
     public void ButtonClicked(object sender, RoutedEventArgs e) {
@@ -127,16 +125,12 @@ namespace MusicManager {
           break;
 
         case "btnEdit":
-          if (btnEdit.Content.Equals("Edit Info")) {
-            foreach (TextBox box in tagBoxes) {
-              box.IsEnabled = true;
-            }
-            btnEdit.Content = "Save Info";
+          if (btnEdit.Content.Equals("Edit Tag")) {
+            gridTag.IsEnabled = true;
+            btnEdit.Content = "Save Tag";
           } else {
-            foreach (TextBox box in tagBoxes) {
-              box.IsEnabled = false;
-            }
-            btnEdit.Content = "Edit Info";
+            gridTag.IsEnabled = false;
+            btnEdit.Content = "Edit Tag";
           }
           break;
       }
@@ -167,97 +161,6 @@ namespace MusicManager {
     }
     #endregion
 
-    #region Helper methods
-    /// <summary>
-    /// Opens each music file by setting up the MusicFile objects.
-    /// If thte filename already appears in the HashSet, it means that
-    /// </summary>
-    /// <param name="filenames">an array of music filenames</param>
-    private void HandleOpen(string[] filenames) {
-      playlist.Items.Remove(defaultItem);
-      List<MusicFile> musicList = new List<MusicFile>(filenames.Length);
-      foreach (string filename in filenames) {
-        /* Check repeated adding */
-        MusicFile music;
-        if (filenameSet.TryGetValue(filename, out music)) {
-          // Logic: find added song in the list, add it to the list to be
-          // updated
-          music.UpdateTag();
-          musicList.Add(music);
-        } else {
-          string extension = System.IO.Path.GetExtension(filename);
-          if (extension.Equals(".cue")) {
-            // TODO: CUE support (find a library)
-          } else if (extension.Equals(".mp3")) {
-            music = new Mp3(filename, this);
-            musicList.Add(music);
-            filenameSet.Add(filename, music);
-          } else {
-            // music.Add(new Flac(filename));
-            // TODO: Other formats
-          }
-        }
-      }
-
-      bool canEdit = (musicList.Count != 0);
-      if (canEdit) {
-        foreach (MusicFile file in musicList) {
-          //TODO: Resolve bug when adding duplicate items.
-          playlist.Items.Add(file);
-          if (file.ReadOnly == false) {
-            canEdit = false;
-          }
-        }
-      }
-      UpdateInfo(musicList);
-      if (canEdit) {
-        SongOptions.IsEnabled = true;
-      }
-    }
-
-    private void UpdateInfo(List<MusicFile> music) {
-      // Get information from the application
-      string[] showTag = new string[8];
-      showTag[0] = txtTitle.Text;
-      showTag[1] = txtAlbum.Text;
-      showTag[2] = txtArtist.Text;
-      showTag[3] = txtTrack.Text;
-      showTag[4] = txtGenre.Text;
-      showTag[5] = txtYear.Text;
-      showTag[6] = txtComment.Text;
-      showTag[7] = txtLength.Text;
-
-      foreach (MusicFile file in music) {
-        string[] tag = file.PassInfo();
-        for (int i = 0; i < tag.Length; i++) {
-          if (showTag[i] == "") {
-            showTag[i] = tag[i];
-          } else if (!showTag[i].Equals(tag[i])) {
-            showTag[i] = "(Multiple Values)";
-          }
-        }
-      }
-      // Display information
-      txtTitle.Text = showTag[0];
-      txtAlbum.Text = showTag[1];
-      txtArtist.Text = showTag[2];
-      txtTrack.Text = showTag[3];
-      txtGenre.Text = showTag[4];
-      txtYear.Text = showTag[5];
-      txtComment.Text = showTag[6];
-      txtLength.Text = showTag[7];
-    }
-
-    private void CleanInfo() {
-      foreach (TextBox tagInfo in tagBoxes) {
-        tagInfo.Clear();
-      }
-      foreach (TextBox streamInfo in streamBoxes) {
-        streamInfo.Clear();
-      }
-    }
-    #endregion
-
     #region Commands
     private void OpenExecuted(object target, ExecutedRoutedEventArgs e) {
       OpenFileDialog musicDialog = new OpenFileDialog();
@@ -277,7 +180,8 @@ namespace MusicManager {
         //}
 
         while (playlist.SelectedItems.Count != 0) {
-          filenameSet.Remove(((MusicFile)(playlist.SelectedItem)).Filename);
+          RemoveInfo((MusicFile)playlist.SelectedItem);
+          filenames.Remove(((MusicFile)(playlist.SelectedItem)).Filename);
           playlist.Items.Remove(playlist.SelectedItem);
         }
 
@@ -285,11 +189,129 @@ namespace MusicManager {
           playlist.Items.Add(defaultItem);
           SongOptions.IsEnabled = false;
           CleanInfo();
-        } else {
-          UpdateInfo(playlist.Items.OfType<MusicFile>().ToList());
         }
+        DisplayInfo();
       }
     }
     #endregion
+
+    #region Helper methods
+    /// <summary>
+    /// Opens each music file by setting up the MusicFile objects.
+    /// If thte filename already appears in the HashSet, it means that
+    /// </summary>
+    /// <param name="filenames">an array of music filenames</param>
+    private void HandleOpen(string[] filenames) {
+      playlist.Items.Remove(defaultItem);
+      // This is the list to be updated in tag info
+
+      bool canEdit = true;
+      /* Parse the filenames */
+      foreach (string filename in filenames) {
+        /* Check repeated adding */
+        MusicFile music;
+        if (this.filenames.TryGetValue(filename, out music)) {
+          // If repeated, do same as reloading
+          // TODO: Make this reloading procedure a method
+          RemoveInfo(music);
+          music.UpdateTag();
+          AddInfo(music);
+          if (music.ReadOnly == false) {
+            canEdit = false;
+          }
+        } else { // Not added; create the music first
+          string extension = System.IO.Path.GetExtension(filename);
+          if (extension.Equals(".cue")) {
+            // TODO: CUE support (find a library)
+          } else if (extension.Equals(".mp3")) {
+            music = new Mp3(filename, this);
+            AddInfo(music);
+            this.filenames.Add(filename, music);
+            playlist.Items.Add(music);
+            if (music.ReadOnly == false) {
+              canEdit = false;
+            }
+          } else {
+            MessageBox.Show("Unsupported format!");
+            // music.Add(new Flac(filename));
+            // TODO: new formats
+          }
+        }
+      }
+
+      DisplayInfo();
+
+      if (canEdit) {
+        SongOptions.IsEnabled = true;
+      } else {
+        MessageBox.Show("Unable to edit tags; is the file read only, or have" +
+          " you opened the file in another app?");
+      }
+    }
+
+    private void AddInfo(MusicFile music) {
+      Dictionary<string, string> musicTag = music.PassInfo();
+      tagValues[txtTitle].Add(musicTag["title"]);
+      tagValues[txtAlbum].Add(musicTag["album"]);
+      tagValues[txtArtist].Add(musicTag["artist"]);
+      tagValues[txtTrack].Add(musicTag["trackNo"]);
+      tagValues[txtGenre].Add(musicTag["genre"]);
+      tagValues[txtYear].Add(musicTag["year"]);
+      tagValues[txtComment].Add(musicTag["comment"]);
+
+      streamValues[txtFilename].Add(musicTag["filename"]);
+      streamValues[txtEncode].Add(musicTag["encoding"]);
+      streamValues[txtChannel].Add(musicTag["channel"]);
+      streamValues[txtSampleRate].Add(musicTag["sampleRate"]);
+      streamValues[txtBits].Add(musicTag["bits"]);
+      streamValues[txtBitRate].Add(musicTag["bitRate"]);
+      streamValues[txtLength].Add(musicTag["length"]);
+    }
+    
+    private void RemoveInfo(MusicFile music) {
+      Dictionary<string, string> musicTag = music.PassInfo();
+      tagValues[txtTitle].Delete(musicTag["title"]);
+      tagValues[txtAlbum].Delete(musicTag["album"]);
+      tagValues[txtArtist].Delete(musicTag["artist"]);
+      tagValues[txtTrack].Delete(musicTag["trackNo"]);
+      tagValues[txtGenre].Delete(musicTag["genre"]);
+      tagValues[txtYear].Add(musicTag["year"]);
+      tagValues[txtComment].Delete(musicTag["comment"]);
+
+      streamValues[txtFilename].Delete(musicTag["filename"]);
+      streamValues[txtEncode].Delete(musicTag["encoding"]);
+      streamValues[txtChannel].Delete(musicTag["channel"]);
+      streamValues[txtSampleRate].Delete(musicTag["sampleRate"]);
+      streamValues[txtBits].Delete(musicTag["bits"]);
+      streamValues[txtBitRate].Delete(musicTag["bitRate"]);
+      streamValues[txtLength].Delete(musicTag["length"]);
+    }
+
+    private void DisplayInfo() {
+      foreach (KeyValuePair<TextBox, TextValue> pair in tagValues) {
+        pair.Key.Text = pair.Value.ToString();
+      }
+
+      foreach (KeyValuePair<TextBox, TextValue> pair in streamValues) {
+        pair.Key.Text = pair.Value.ToString();
+      }
+    }
+
+    private void CleanInfo() {
+      foreach (TextBox tagInfo in tagValues.Keys) {
+        tagInfo.Clear();
+      }
+      foreach (TextBox streamInfo in streamValues.Keys) {
+        streamInfo.Clear();
+      }
+      foreach (TextValue value in tagValues.Values) {
+        value.Clear();
+      }
+      foreach (TextValue value in streamValues.Values) {
+        value.Clear();
+      }
+    }
+    #endregion
+
   }
 }

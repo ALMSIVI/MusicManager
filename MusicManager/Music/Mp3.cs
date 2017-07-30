@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TagLib;
 
 namespace MusicManager.Music {
@@ -12,17 +8,21 @@ namespace MusicManager.Music {
 
     public Mp3(string musicName, MainWindow windowController) :
       base(musicName, windowController) {
+      encoding = "MPEG 1 Layer 3";
+      bits = 16; // For MP3 there is no such thing as bits
+      // TODO: Resolve encoding not fit issue
+      // TODO: There is a bug with VBR tag.
       UpdateTag();
     }
 
     /* Three tags for MP3 */
     private void LoadId3V1() {
       Tag tag = tagFile.GetTag(TagTypes.Id3v1);
-      title = tag.Title;
+      title = tag.Title == null ? String.Empty : tag.Title;
       artist = String.Join(",", tag.Performers);
-      album = tag.Album;
+      album = tag.Album == null ? String.Empty : tag.Album;
       year = tag.Year;
-      comment = tag.Comment;
+      comment = tag.Comment == null ? String.Empty : tag.Comment;
       trackNo = tag.Track;
       genre = String.Join(",", tag.Genres);
     }
@@ -30,7 +30,7 @@ namespace MusicManager.Music {
     private void LoadApeV2() { }
 
     public override void UpdateTag() {
-      /// <see cref="readPriority"/>
+      /// <see cref="MainWindow.ReadPriority"/>
       IDictionary<Int32, LoadInfo> loadInfo = new Dictionary<Int32, LoadInfo>();
       loadInfo[0] = delegate {
         LoadApeV2();
@@ -54,6 +54,12 @@ namespace MusicManager.Music {
       };
 
       loadInfo[controller.ReadPriority]();
+    }
+
+    public override Dictionary<string, string> PassInfo() {
+      // TODO: after loading ID3v2, modify track count
+      // TODO: Add VBR/CBR/ABR after bitrate
+      return base.PassInfo();
     }
 
     public override void Pause() {

@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NAudio;
-using NAudio.Wave;
 using TagLib;
 
 namespace MusicManager.Music {
@@ -35,11 +30,11 @@ namespace MusicManager.Music {
 
     /* Encoding Information */
     protected string encoding; // 7
-    protected uint channel; // 8
-    protected uint frequency; // 9
-    protected uint bit; // 10
-    protected uint rate; // 11
-    protected long length; // 12: In milliseconds
+    protected int channel; // 8
+    protected int sampleRate; // 9
+    protected int bits; // 10
+    protected int bitRate; // 11
+    protected TimeSpan length; // 12: In milliseconds
     protected uint gain; // 13
     #endregion
 
@@ -52,7 +47,13 @@ namespace MusicManager.Music {
       Filename = musicName;
       tagFile = File.Create(musicName);
       ReadOnly = tagFile.Writeable;
-      length = tagFile.Length;
+
+      channel = tagFile.Properties.AudioChannels;
+      sampleRate = tagFile.Properties.AudioSampleRate;
+      bits = tagFile.Properties.BitsPerSample;
+      bitRate = tagFile.Properties.AudioBitrate;
+      length = tagFile.Properties.Duration;
+
       controller = windowController;
     }
     #endregion
@@ -64,21 +65,25 @@ namespace MusicManager.Music {
     #endregion
 
     #region Concrete methods
-    public string[] PassInfo() {
-      string[] tag = new string[8];
-      tag[0] = title;
-      tag[1] = album;
-      tag[2] = artist;
-      tag[3] = trackNo.ToString();
-      tag[4] = genre;
-      tag[5] = year.ToString();
-      tag[6] = comment;
+    public virtual Dictionary<string, string> PassInfo() {
+      return new Dictionary<string, string> {
+        ["title"] = title,
+        ["album"] = album,
+        ["artist"] = artist,
+        ["trackNo"] = trackNo.ToString(),
+        ["genre"] = genre,
+        ["year"] = year.ToString(),
+        ["comment"] = comment,
 
-      tag[7] = FormatLength();
-      return tag;
+        ["filename"] = Filename,
+        ["encoding"] = encoding,
+        ["channel"] = channel.ToString(),
+        ["sampleRate"] = sampleRate.ToString() + " Hz",
+        ["bits"] = bits.ToString() + " Bits",
+        ["bitRate"] = bitRate.ToString() + " Kbps",
+        ["length"] = FormatLength()
+      };
     }
-
-
 
     /// <summary>
     /// Formats the length to HH:MM:SS.Mil.
@@ -87,38 +92,30 @@ namespace MusicManager.Music {
     /// A string that contains the format length.
     /// </returns>
     public string FormatLength() {
-      string lengthStr = "";
-
-      long time = length;
-      long tempTime;
-
-      // Hour: optional
-      tempTime = time / HR_TO_MILLI;
-      if (tempTime != 0) { // Has an hour value
-        lengthStr = lengthStr + tempTime + ":";
+      if (length.Hours == 0) {
+        if (length.Minutes < 10) {
+          return length.ToString(@"m\:ss\.fff");
+        } else {
+          return length.ToString(@"mm\:ss\.fff");
+        }
+      } else {
+        return length.ToString(@"hh\:mm\:ss\.fff");
       }
-      time = time % HR_TO_MILLI;
-
-      // Min: must have
-      tempTime = time / MIN_TO_MILLI;
-      lengthStr = lengthStr + tempTime + ":";
-      time = time % MIN_TO_MILLI;
-
-      // Sec & Millisec: must have
-      tempTime = time / SEC_TO_MILLI;
-      lengthStr = lengthStr + tempTime + "." + (time % SEC_TO_MILLI);
-
-      return lengthStr;
     }
     #endregion
 
     #region Override methods
     public override string ToString() {
+      // TODO: Read format from settings
       return title;
     }
 
     public override bool Equals(object obj) {
-      return obj is MusicFile;
+      if (!(obj is MusicFile)) {
+        return false;
+      }
+
+      return Filename.Equals(((MusicFile)obj).Filename);
     }
     #endregion
   }

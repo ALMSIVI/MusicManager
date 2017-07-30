@@ -44,13 +44,20 @@
 		</Grid.ColumnDefinitions>
 
 		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
 			<RowDefinition/>
 			<RowDefinition Height="40" />
 		</Grid.RowDefinitions>
+
+		<Menu Grid.Row="0" Grid.ColumnSpan="3">
+			<MenuItem Header="About">
+				<MenuItem Header="About"/>
+				<MenuItem Header="Settings"/>
+			</MenuItem>
+		</Menu>
 		
 		<!-- The place to control music play, open / drag music to list -->
-		<Grid Grid.Column="0" Grid.Row = "0">
-
+		<Grid Grid.Column="0" Grid.Row = "1">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="50" />
 				<RowDefinition Height="60" />
@@ -70,7 +77,6 @@
 				</DockPanel>
 			</Border>
 
-			
 			<!-- Play buttons -->
 			<Grid Grid.Row="2">
 				<Grid.ColumnDefinitions>
@@ -103,7 +109,7 @@
 
 
 		<!-- Add and Delete -->
-		<Grid Grid.Row = "1" Grid.Column = "0" HorizontalAlignment="Stretch">
+		<Grid Grid.Row = "2" Grid.Column = "0" HorizontalAlignment="Stretch">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition/>
 				<ColumnDefinition/>
@@ -114,7 +120,7 @@
 		</Grid>
 
 		<!-- The place to display tags and read options: 500 x 400 -->
-		<Grid Grid.Column="1" Grid.Row = "0">
+		<Grid Grid.Column="1" Grid.Row = "1">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
@@ -142,18 +148,18 @@
 				<DockPanel>
 					<TextBlock DockPanel.Dock="Left">Filename</TextBlock>
 					<Button DockPanel.Dock="Right" Margin="10 5 10 5">Guess tag from filename</Button>
-					<TextBox IsEnabled="False"/>
+					<TextBox x:Name="txtFilename" IsReadOnly="True"/>
 				</DockPanel>
 			</GroupBox>
 
-			<GroupBox x:Name="gridTag" Grid.Row="1" Header="Tag" Margin="5 0 5 5">
+			<GroupBox x:Name="gridTag" Grid.Row="1" Header="Tag" Margin="5 0 5 5" IsEnabled="False">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition/>
 						<RowDefinition/>
 						<RowDefinition/>
 						<RowDefinition/>
-						<RowDefinition Height="100" />
+						<RowDefinition Height="80" />
 					</Grid.RowDefinitions>
 
 					<DockPanel Grid.Row="0">
@@ -202,7 +208,7 @@
 
 					<DockPanel Grid.Row="4">
 						<TextBlock DockPanel.Dock="Left" VerticalAlignment="Top" Margin="10 10 5 5">Comment</TextBlock>
-						<TextBox x:Name ="txtComment" DockPanel.Dock="Right" VerticalAlignment="Stretch" Margin="10"/>
+						<TextBox x:Name ="txtComment" DockPanel.Dock="Right" VerticalAlignment="Stretch" Margin="10" AcceptsReturn="True"/>
 					</DockPanel>
 				</Grid>
 			</GroupBox>
@@ -248,7 +254,7 @@
 						</ComboBox>
 					</DockPanel>
 
-					<CheckBox x:Name="chkPadding" Grid.Row="3" IsChecked="True" VerticalAlignment="Center" Margin="10">Enable data padding when writing ID3v2</CheckBox>
+					<CheckBox x:Name="chkPadding" Grid.Row="3" IsChecked="True" VerticalAlignment="Center" Margin="10 5 0 5">Enable data padding when writing ID3v2</CheckBox>
 				</Grid>
 			</GroupBox>
 			
@@ -257,7 +263,7 @@
 
 
 		<!-- The place to display cover art and streaming information -->
-		<Grid Grid.Column="2" Grid.Row = "0">
+		<Grid Grid.Column="2" Grid.Row = "1">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="240"/>
 				<RowDefinition/>
@@ -283,31 +289,60 @@
 					<RowDefinition/>
 					<RowDefinition/>
 				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition/>
-					<ColumnDefinition/>
-				</Grid.ColumnDefinitions>
 
-				<TextBlock Grid.Row="0" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Encoding</TextBlock>
-				<TextBlock Grid.Row="1" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Channel</TextBlock>
-				<TextBlock Grid.Row="2" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Frequency</TextBlock>
-				<TextBlock Grid.Row="3" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Bit</TextBlock>
-				<TextBlock Grid.Row="4" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Rate</TextBlock>
-				<TextBlock Grid.Row="5" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Length</TextBlock>
-				<TextBlock Grid.Row="6" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center">Gain</TextBlock>
+				<Grid.Resources>
+					<Style TargetType="TextBlock">
+						<Setter Property="TextAlignment" Value="Center"/>
+						<Setter Property="VerticalAlignment" Value="Center"/>
+						<Setter Property="Width" Value="80"/>
+					</Style>
+					
+					<Style TargetType="TextBox">
+						<Setter Property="HorizontalAlignment" Value="Stretch"/>
+						<Setter Property="VerticalAlignment" Value="Center"/>
+						<Setter Property="Margin" Value="10 5 10 5"/>
+					</Style>
+				</Grid.Resources>
 
-				<TextBox x:Name="txtEncode" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10 5 10 5"/>
-				<TextBox x:Name="txtChannel" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10 5 10 5"/>
-				<TextBox x:Name="txtFrequency" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10 5 10 5"/>
-				<TextBox x:Name="txtBit" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10 5 10 5"/>
-				<TextBox x:Name="txtRate" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10 5 10 5"/>
-				<TextBox x:Name ="txtLength" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10 5 10 5"/>
-				<TextBox x:Name="txtGain" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10 5 10 5"/>
+				<DockPanel Grid.Row="0">
+					<TextBlock>Encoding</TextBlock>
+					<TextBox x:Name="txtEncode"/>
+				</DockPanel>
+
+				<DockPanel Grid.Row="1">
+					<TextBlock>Channel</TextBlock>
+					<TextBox x:Name="txtChannel"/>
+				</DockPanel>
+				
+				<DockPanel Grid.Row="2">
+					<TextBlock>Sample Rate</TextBlock>
+					<TextBox x:Name="txtSampleRate"/>
+				</DockPanel>
+				
+				<DockPanel Grid.Row="3">
+					<TextBlock>Bits</TextBlock>
+					<TextBox x:Name="txtBits"/>
+				</DockPanel>
+				
+				<DockPanel Grid.Row="4">
+					<TextBlock>Bit rate</TextBlock>
+					<TextBox x:Name="txtBitRate"/>
+				</DockPanel>
+				
+				<DockPanel Grid.Row="5">
+					<TextBlock>Length</TextBlock>
+					<TextBox x:Name="txtLength"/>
+				</DockPanel>
+
+				<DockPanel Grid.Row="6">
+					<TextBlock>Gain</TextBlock>
+					<TextBox x:Name="txtGain"/>
+				</DockPanel>
 			</Grid>
 		</Grid>
 
 		<!-- Buttons at the Property part -->
-		<Grid x:Name="SongOptions" IsEnabled="False" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1">
+		<Grid x:Name="SongOptions" IsEnabled="False" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition/>
 				<ColumnDefinition/>
@@ -321,7 +356,7 @@
 			<Button x:Name = "btnLatter" Grid.Column="1">Next Song</Button>
 			<Button x:Name = "btnReread" Grid.Column="2">Reload Song</Button>
 			<Button x:Name = "btnMore" Grid.Column="3" Click="ButtonClicked">More Info</Button>
-			<Button x:Name = "btnEdit" Click='ButtonClicked' Grid.Column="4">Edit Info</Button> <!-- Can be changed to Save info -->
+			<Button x:Name = "btnEdit" Click='ButtonClicked' Grid.Column="4">Edit Tag</Button> <!-- Can be changed to Save info -->
 			<Button x:Name = "btnConvert" Grid.Column="5" Click="ButtonClicked">Convert</Button>
 		</Grid>
 
