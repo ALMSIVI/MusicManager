@@ -12,30 +12,52 @@ namespace MusicManager.Music {
     #endregion
 
     #region File
-    public string Filename { get; }
+    public string Filename { get; protected set; }
     protected File tagFile;
     public bool ReadOnly { get; private set; }
     protected MainWindow controller;
     #endregion
 
     #region Tag
-    /* Basic Information, will vary from different format */
-    protected string title; // 0
-    protected string album; // 1
-    protected string artist; // 2
-    protected uint trackNo; // 3
-    protected string genre; // 4
-    protected uint year; // 5
-    protected string comment; // 6
+    /// <remarks>
+    /// Auto property is enabled for tags, but when passing information,
+    /// instead of directly using them, two methods called PassInfo() and
+    /// SaveInfo(), are used to better format these data for the UI.
+    /// </remarks>
+    public string Title { get; protected set; }
+    public string Album { get; protected set; }
+    public string Artist { get; protected set; }
+    public uint TrackNo { get; protected set; }
+    public string Genre { get; protected set; }
+    public uint Year { get; protected set; }
+    public string Comment { get; protected set; }
+    #endregion
 
-    /* Encoding Information */
-    protected string encoding; // 7
-    protected int channel; // 8
-    protected int sampleRate; // 9
-    protected int bits; // 10
-    protected int bitRate; // 11
-    protected TimeSpan length; // 12: In milliseconds
-    protected uint gain; // 13
+    #region Stream
+    protected string encoding;
+    protected int channel;
+    protected int sampleRate;
+    protected int bits;
+    protected int bitRate;
+    protected TimeSpan length;
+    protected uint gain;
+    #endregion
+
+    #region Other Info
+    public string Format { get; protected set; }
+    public string Length {
+      get {
+        if (length.Hours == 0) {
+          if (length.Minutes < 10) {
+            return length.ToString(@"m\:ss\.fff");
+          } else {
+            return length.ToString(@"mm\:ss\.fff");
+          }
+        } else {
+          return length.ToString(@"hh\:mm\:ss\.fff");
+        }
+      }
+    }
     #endregion
 
     #region Constructor
@@ -67,13 +89,13 @@ namespace MusicManager.Music {
     #region Concrete methods
     public virtual Dictionary<string, string> PassInfo() {
       return new Dictionary<string, string> {
-        ["title"] = title,
-        ["album"] = album,
-        ["artist"] = artist,
-        ["trackNo"] = trackNo.ToString(),
-        ["genre"] = genre,
-        ["year"] = year.ToString(),
-        ["comment"] = comment,
+        ["title"] = Title,
+        ["album"] = Album,
+        ["artist"] = Artist,
+        ["trackNo"] = TrackNo.ToString(),
+        ["genre"] = Genre,
+        ["year"] = Year.ToString(),
+        ["comment"] = Comment,
 
         ["filename"] = Filename,
         ["encoding"] = encoding,
@@ -81,33 +103,29 @@ namespace MusicManager.Music {
         ["sampleRate"] = sampleRate.ToString() + " Hz",
         ["bits"] = bits.ToString() + " Bits",
         ["bitRate"] = bitRate.ToString() + " Kbps",
-        ["length"] = FormatLength()
+        ["length"] = Length
       };
     }
 
-    /// <summary>
-    /// Formats the length to HH:MM:SS.Mil.
-    /// </summary>
-    /// <returns>
-    /// A string that contains the format length.
-    /// </returns>
-    public string FormatLength() {
-      if (length.Hours == 0) {
-        if (length.Minutes < 10) {
-          return length.ToString(@"m\:ss\.fff");
-        } else {
-          return length.ToString(@"mm\:ss\.fff");
-        }
-      } else {
-        return length.ToString(@"hh\:mm\:ss\.fff");
-      }
+    public virtual void SaveInfo(Dictionary<string, string> newInfo) {
+      /// <remarks>
+      /// Note that TrackNo is not set. This is because for some music with tag
+      /// TrackCount, the info passed in will not be a parsable string.
+      /// </remarks>
+      Title = newInfo["title"];
+      Album = newInfo["album"];
+      Artist = newInfo["artist"];
+      Genre = newInfo["genre"];
+      Year = UInt32.Parse(newInfo["year"]);
+      Comment = newInfo["comment"];
     }
+
     #endregion
 
     #region Override methods
     public override string ToString() {
       // TODO: Read format from settings
-      return title;
+      return Title;
     }
 
     public override bool Equals(object obj) {

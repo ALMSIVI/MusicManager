@@ -9,6 +9,8 @@ namespace MusicManager {
   /// Represents the value to be displayed in a TextBox.
   /// </summary>
   public class TextValue {
+    public const string MULTIPLE_VALUES = "(Multiple Values)";
+
     private Dictionary<string, int> values;
 
     public TextValue() {
@@ -38,7 +40,7 @@ namespace MusicManager {
 
     public override string ToString() {
       if (values.Count > 1) {
-        return "(Multiple Values)";
+        return MULTIPLE_VALUES;
       } else if (values.Count == 1) {
         return values.First().Key;
       } else {

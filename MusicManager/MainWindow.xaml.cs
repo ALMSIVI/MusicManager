@@ -6,7 +6,7 @@ using System.Windows.Input;
 using Microsoft.Win32;
 
 using MusicManager.Music;
-
+using System.Windows.Media;
 
 namespace MusicManager {
   /// <summary>
@@ -85,6 +85,7 @@ namespace MusicManager {
     public MainWindow() {
       InitializeComponent();
 
+      /* Initialize the stored info */
       filenames = new Dictionary<string, MusicFile>();
 
       tagValues = new Dictionary<TextBox, TextValue> {
@@ -111,6 +112,11 @@ namespace MusicManager {
     #endregion
 
     #region Events
+    /// <summary>
+    /// Handles a variety of trivial button clicks.
+    /// </summary>
+    /// <param name="sender">The clicked button</param>
+    /// <param name="e">Click arguments</param>
     public void ButtonClicked(object sender, RoutedEventArgs e) {
       Button button = sender as Button;
       switch (button.Name) {
@@ -122,6 +128,11 @@ namespace MusicManager {
         case "btnMore":
           MoreInfo moreInfoWindow = new MoreInfo();
           moreInfoWindow.Show();
+          break;
+
+        case "btnGuess":
+          Guess guessWindow = new Guess();
+          guessWindow.Show();
           break;
 
         case "btnEdit":
@@ -136,14 +147,42 @@ namespace MusicManager {
       }
     }
 
-    private void MusicDrop(object sender, DragEventArgs e) {
-      if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
-        string[] musicFiles = (string[])e.Data.GetData(DataFormats.FileDrop);
+    /// <summary>
+    /// Handles a variety of menu item clicks.
+    /// </summary>
+    /// <param name="sender">The clicked MenuItem</param>
+    /// <param name="e">Click arguments</param>
+    public void MenuClicked(object sender, RoutedEventArgs e) {
+      MenuItem menuItem = sender as MenuItem;
+      switch (menuItem.Name) {
+        case "menuAbout":
+          About aboutWindow = new About();
+          aboutWindow.Show();
+          break;
 
-        HandleOpen(musicFiles);
+        case "menuSettings":
+          Settings settingsWindow = new Settings();
+          settingsWindow.Show();
+          break;
       }
     }
 
+    /// <summary>
+    /// Loads the music files that the user has dropped into the playlist.
+    /// </summary>
+    /// <param name="sender">The playlist as Listbox</param>
+    /// <param name="e">Drag arguments</param>
+    private void MusicDrop(object sender, DragEventArgs e) {
+      if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+        HandleOpen((string[])e.Data.GetData(DataFormats.FileDrop));
+      }
+    }
+
+    /// <summary>
+    /// TBD
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void CoverArtDrop(object sender, DragEventArgs e) {
 
     }
@@ -162,6 +201,11 @@ namespace MusicManager {
     #endregion
 
     #region Commands
+    /// <summary>
+    /// Open command: generates a dialog and handles file open.
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="e"></param>
     private void OpenExecuted(object target, ExecutedRoutedEventArgs e) {
       OpenFileDialog musicDialog = new OpenFileDialog();
       musicDialog.Multiselect = true;
@@ -171,14 +215,13 @@ namespace MusicManager {
       }
     }
 
+    /// <summary>
+    /// Delete command: delete items from the playlist
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="e"></param>
     private void DeleteExecuted(object target, ExecutedRoutedEventArgs e) {
       if (!playlist.SelectedItems.Contains(defaultItem)) {
-        //var selectedItems = playlist.SelectedItems.Cast<MusicFile>().ToArray();
-        //foreach (MusicFile file in selectedItems) {
-        //  filenameSet.Remove(file.Filename);
-        //  playlist.Items.Remove(file);
-        //}
-
         while (playlist.SelectedItems.Count != 0) {
           RemoveInfo((MusicFile)playlist.SelectedItem);
           filenames.Remove(((MusicFile)(playlist.SelectedItem)).Filename);
@@ -290,10 +333,20 @@ namespace MusicManager {
     private void DisplayInfo() {
       foreach (KeyValuePair<TextBox, TextValue> pair in tagValues) {
         pair.Key.Text = pair.Value.ToString();
+        if (pair.Value.ToString().Equals(TextValue.MULTIPLE_VALUES)) {
+          pair.Key.Foreground = Brushes.Red;
+        } else {
+          pair.Key.Foreground = Brushes.Black;
+        }
       }
 
       foreach (KeyValuePair<TextBox, TextValue> pair in streamValues) {
         pair.Key.Text = pair.Value.ToString();
+        if (pair.Value.ToString().Equals(TextValue.MULTIPLE_VALUES)) {
+          pair.Key.Foreground = Brushes.Red;
+        } else {
+          pair.Key.Foreground = Brushes.Black;
+        }
       }
     }
 

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MusicManager"
         mc:Ignorable="d"
-        Title="MusicManager" Height="540" Width="960" Icon="pack://application:,,,/MusicManager;component/Icons/ManagerMain.ico">
+        Title="MusicManager" Height="540" Width="960">
 
 	<Window.Resources>
 		<Style x:Key="EmptyButtonStyle" TargetType="{x:Type Button}">
@@ -32,36 +32,37 @@
 	</Window.Resources>
 
 	<Window.CommandBindings>
-		<CommandBinding Command="ApplicationCommands.Open" Executed="OpenExecuted" />
-		<CommandBinding Command="ApplicationCommands.Delete" Executed="DeleteExecuted" />
+		<CommandBinding Command="ApplicationCommands.Open"
+						Executed="OpenExecuted"/>
+		<CommandBinding Command="ApplicationCommands.Delete"
+						Executed="DeleteExecuted"/>
 	</Window.CommandBindings>
 
 	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width= "360" />
+			<ColumnDefinition Width="360"/>
 			<ColumnDefinition/>
-			<ColumnDefinition Width="200" />
+			<ColumnDefinition Width="200"/>
 		</Grid.ColumnDefinitions>
-
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition/>
-			<RowDefinition Height="40" />
+			<RowDefinition Height="40"/>
 		</Grid.RowDefinitions>
 
 		<Menu Grid.Row="0" Grid.ColumnSpan="3">
 			<MenuItem Header="About">
-				<MenuItem Header="About"/>
-				<MenuItem Header="Settings"/>
+				<MenuItem Name="menuAbout" Header="About" Click="MenuClicked"/>
+				<MenuItem Name="menuSettings" Header="Settings" Click="MenuClicked"/>
 			</MenuItem>
 		</Menu>
 		
 		<!-- The place to control music play, open / drag music to list -->
-		<Grid Grid.Column="0" Grid.Row = "1">
+		<Grid Grid.Column="0" Grid.Row="1">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="50" />
-				<RowDefinition Height="60" />
-				<RowDefinition Height="Auto" />
+				<RowDefinition Height="50"/>
+				<RowDefinition Height="60"/>
+				<RowDefinition Height="Auto"/>
 				<RowDefinition/>
 			</Grid.RowDefinitions>
 
@@ -71,60 +72,93 @@
 
 			<Border Grid.Row="1" BorderBrush="Black" BorderThickness="0 0 0 1">
 				<DockPanel>
-					<TextBlock DockPanel.Dock="Right" FontSize="30" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 0 5 0">00:00</TextBlock>
-					<Slider x:Name = "progressSlider" Margin="10 0 0 0"
-							VerticalAlignment = "Center" HorizontalAlignment="Stretch"/>
+					<TextBlock DockPanel.Dock="Right" FontSize="30"
+							   VerticalAlignment="Top"
+							   HorizontalAlignment="Right"
+							   Margin="0 0 5 0">00:00</TextBlock>
+					<Slider Name="progressSlider" Margin="10 0 0 0"
+							VerticalAlignment="Center"
+							HorizontalAlignment="Stretch"
+							IsMoveToPointEnabled="True"/>
 				</DockPanel>
 			</Border>
 
 			<!-- Play buttons -->
 			<Grid Grid.Row="2">
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width = "60" />
-					<ColumnDefinition Width = "80" />
-					<ColumnDefinition Width = "60" />
-					<ColumnDefinition Width = "50" />
-					<ColumnDefinition Width = "*" />
+					<ColumnDefinition Width="60"/>
+					<ColumnDefinition Width="80"/>
+					<ColumnDefinition Width="60"/>
+					<ColumnDefinition Width="50"/>
+					<ColumnDefinition/>
 				</Grid.ColumnDefinitions>
 
-				<Button x:Name = "btnPrev" Grid.Column = "0" Margin="10 0 0 0" Style="{DynamicResource EmptyButtonStyle}">
-					<Image Source = "pack://application:,,,/MusicManager;component/Icons/back.png" />
+				<Button Name="btnPrev" Grid.Column="0" Margin="10 0 0 0"
+						Style="{DynamicResource EmptyButtonStyle}">
+					<Image Source="pack://application:,,,/MusicManager;component/Icons/back.png"/>
 				</Button>
-				<Button x:Name = "btnPlay" Grid.Column = "1" Margin="5" Style="{DynamicResource EmptyButtonStyle}">
-					<Image Source = "pack://application:,,,/MusicManager;component/Icons/play-button.png" />
+				<Button Name="btnPlay" Grid.Column="1" Margin="5"
+						Style="{DynamicResource EmptyButtonStyle}">
+					<Image Source = "pack://application:,,,/MusicManager;component/Icons/play-button.png"/>
 				</Button>
-				<Button x:Name = "btnNext" Grid.Column = "2" Margin="0 0 10 0" Style="{DynamicResource EmptyButtonStyle}">
-					<Image Source = "pack://application:,,,/MusicManager;component/Icons/next.png" />
+				<Button Name="btnNext" Grid.Column="2" Margin="0 0 10 0"
+						Style="{DynamicResource EmptyButtonStyle}">
+					<Image Source = "pack://application:,,,/MusicManager;component/Icons/next.png"/>
 				</Button>
-				<Image x:Name = "btnVolume" Grid.Column = "3" Margin="5 0 10 0" Source="/MusicManager;component/Icons/speaker.png" />
-				<Slider x:Name = "volumeSlider" Grid.Column = "4" VerticalAlignment = "Center" Margin="0 0 5 0" />
+				<Image Name="btnVolume" Grid.Column="3" Margin="5 0 10 0"
+					   Source="/MusicManager;component/Icons/speaker.png"/>
+				<Slider Name="volumeSlider" Grid.Column="4"
+						VerticalAlignment="Center" Margin="0 0 5 0"
+						IsMoveToPointEnabled="True"
+						Value="50" Maximum="100"/>
 			</Grid>
 
-			<ListBox x:Name ="playlist" AllowDrop="True" Drop ="MusicDrop" SelectionMode="Extended" Grid.Row = "3">
-				<ListBoxItem x:Name = "defaultItem" Content="Drag or Open..." />
+			<ListBox Name="playlist" AllowDrop="True" Drop="MusicDrop"
+					 SelectionMode="Extended" Grid.Row="3">
+				<ListBox.ItemContainerStyle>
+					<Style TargetType="ListBoxItem">
+						<Setter Property="ToolTip">
+							<Setter.Value>
+								<StackPanel>
+									<TextBlock Text="{Binding Path=Title, StringFormat=Title: {0}}"/>
+									<TextBlock Text="{Binding Path=Artist, StringFormat=Artist: {0}}"/>
+									<TextBlock Text="{Binding Path=Album, StringFormat=Album: {0}}"/>
+									<TextBlock Text="{Binding Path=Format, StringFormat=Format: {0}}"/>
+									<TextBlock Text="{Binding Path=Length, StringFormat=Length: {0}}"/>
+									<TextBlock Text="{Binding Path=Filename, StringFormat=Filename: {0}}"/>
+								</StackPanel>
+							</Setter.Value>
+						</Setter>
+					</Style>
+				</ListBox.ItemContainerStyle>
+				
+				<ListBoxItem Name="defaultItem" Content="Drag or Open..." ToolTip="Drag or Open music file..."/>
 			</ListBox>
 
-			<Border BorderThickness="0 0 1 0" BorderBrush="Black" Grid.RowSpan="4"/>
+			<Border BorderThickness="0 0 1 0" BorderBrush="Black"
+					Grid.RowSpan="4"/>
 		</Grid>
 
 
 		<!-- Add and Delete -->
-		<Grid Grid.Row = "2" Grid.Column = "0" HorizontalAlignment="Stretch">
+		<Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition/>
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 
-			<Button Grid.Column = "0" Command="ApplicationCommands.Open">Open / Add</Button>
-			<Button Grid.Column = "1" Command="ApplicationCommands.Delete">Delete</Button>
+			<Button Grid.Column="0"
+					Command="ApplicationCommands.Open">Add Music</Button>
+			<Button Grid.Column="1"
+					Command="ApplicationCommands.Delete">Remove Music</Button>
 		</Grid>
 
 		<!-- The place to display tags and read options: 500 x 400 -->
-		<Grid Grid.Column="1" Grid.Row = "1">
+		<Grid Grid.Column="1" Grid.Row="1">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition />
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition/>
 			</Grid.RowDefinitions>
 
 			<Grid.Resources>
@@ -144,71 +178,80 @@
 				</Style>
 			</Grid.Resources>
 			
-			<GroupBox x:Name="gridFile" Grid.Row="0" Header="File" Margin="5">
+			<GroupBox Name="gridFile" Grid.Row="0" Header="File" Margin="5">
 				<DockPanel>
 					<TextBlock DockPanel.Dock="Left">Filename</TextBlock>
-					<Button DockPanel.Dock="Right" Margin="10 5 10 5">Guess tag from filename</Button>
-					<TextBox x:Name="txtFilename" IsReadOnly="True"/>
+					<Button Name="btnGuess" DockPanel.Dock="Right"
+							Margin="10 5 10 5"
+							Click="ButtonClicked">Guess tag from filename</Button>
+					<TextBox Name="txtFilename" IsReadOnly="True"/>
 				</DockPanel>
 			</GroupBox>
 
-			<GroupBox x:Name="gridTag" Grid.Row="1" Header="Tag" Margin="5 0 5 5" IsEnabled="False">
+			<GroupBox Name="gridTag" Grid.Row="1" Header="Tag"
+					  Margin="5 0 5 5" IsEnabled="False">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition/>
 						<RowDefinition/>
 						<RowDefinition/>
 						<RowDefinition/>
-						<RowDefinition Height="80" />
+						<RowDefinition Height="80"/>
 					</Grid.RowDefinitions>
 
 					<DockPanel Grid.Row="0">
 						<TextBlock DockPanel.Dock="Left">Title</TextBlock>
-						<TextBox x:Name ="txtTitle" DockPanel.Dock="Right"/>
+						<TextBox Name ="txtTitle" DockPanel.Dock="Right"/>
 					</DockPanel>
 
 					<DockPanel Grid.Row="1">
-						<TextBlock DockPanel.Dock="Left" TextAlignment="Left">Album</TextBlock>
-						<TextBox x:Name ="txtAlbum" DockPanel.Dock="Right"/>
+						<TextBlock DockPanel.Dock="Left"
+								   TextAlignment="Left">Album</TextBlock>
+						<TextBox Name ="txtAlbum" DockPanel.Dock="Right"/>
 					</DockPanel>
 
 					<Grid Grid.Row="2">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="280"/>
-							<ColumnDefinition Width="*"/>
+							<ColumnDefinition/>
 						</Grid.ColumnDefinitions>
 
 						<DockPanel Grid.Column="0">
 							<TextBlock DockPanel.Dock="Left">Artist</TextBlock>
-							<TextBox x:Name ="txtArtist" DockPanel.Dock="Right"/>
+							<TextBox Name ="txtArtist" DockPanel.Dock="Right"/>
 						</DockPanel>
 
 						<DockPanel Grid.Column="1">
 							<TextBlock DockPanel.Dock="Left">Track</TextBlock>
-							<TextBox x:Name ="txtTrack" DockPanel.Dock="Right"/>
+							<TextBox Name ="txtTrack" DockPanel.Dock="Right"/>
 						</DockPanel>
 					</Grid>
 
 					<Grid Grid.Row="3">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="250"/>
-							<ColumnDefinition Width="*"/>
+							<ColumnDefinition/>
 						</Grid.ColumnDefinitions>
 
 						<DockPanel Grid.Column="0">
 							<TextBlock DockPanel.Dock="Left">Genre</TextBlock>
-							<TextBox x:Name ="txtGenre" DockPanel.Dock="Right"/>
+							<TextBox Name ="txtGenre" DockPanel.Dock="Right"/>
 						</DockPanel>
 
 						<DockPanel Grid.Column="1">
 							<TextBlock DockPanel.Dock="Left">Year</TextBlock>
-							<TextBox x:Name ="txtYear" DockPanel.Dock="Right"/>
+							<TextBox Name ="txtYear" DockPanel.Dock="Right"/>
 						</DockPanel>
 					</Grid>
 
 					<DockPanel Grid.Row="4">
-						<TextBlock DockPanel.Dock="Left" VerticalAlignment="Top" Margin="10 10 5 5">Comment</TextBlock>
-						<TextBox x:Name ="txtComment" DockPanel.Dock="Right" VerticalAlignment="Stretch" Margin="10" AcceptsReturn="True"/>
+						<TextBlock DockPanel.Dock="Left"
+								   VerticalAlignment="Top"
+								   Margin="10 10 5 5">Comment</TextBlock>
+						<TextBox Name ="txtComment" DockPanel.Dock="Right"
+								 VerticalAlignment="Stretch"
+								 Margin="10"
+								 AcceptsReturn="True"/>
 					</DockPanel>
 				</Grid>
 			</GroupBox>
@@ -225,7 +268,7 @@
 
 					<DockPanel Grid.Row="0">
 						<TextBlock DockPanel.Dock="Left">Read Type Priority</TextBlock>
-						<ComboBox x:Name="cbxPriority" DockPanel.Dock="Right">
+						<ComboBox Name="cbxPriority" DockPanel.Dock="Right">
 							<ComboBoxItem IsSelected="True">APEv2 > ID3v2 > ID3v1</ComboBoxItem>
 							<ComboBoxItem>ID3v2 > APEv2 > ID3v1</ComboBoxItem>
 							<ComboBoxItem>ID3v1 > ID3v2 > APEv2</ComboBoxItem>
@@ -235,7 +278,7 @@
 
 					<DockPanel Grid.Row="1">
 						<TextBlock DockPanel.Dock="Left">ID3v2 Encoding Type</TextBlock>
-						<ComboBox x:Name="cbxType" DockPanel.Dock="Right">
+						<ComboBox Name="cbxType" DockPanel.Dock="Right">
 							<ComboBoxItem IsSelected="True">ISO-8859-1</ComboBoxItem>
 							<ComboBoxItem>UTF-16</ComboBoxItem>
 							<ComboBoxItem>UTF-8</ComboBoxItem>
@@ -244,7 +287,7 @@
 
 					<DockPanel Grid.Row="2">
 						<TextBlock DockPanel.Dock="Left">Write Type</TextBlock>
-						<ComboBox x:Name="cbxWrite" DockPanel.Dock="Right">
+						<ComboBox Name="cbxWrite" DockPanel.Dock="Right">
 							<ComboBoxItem>ID3v1</ComboBoxItem>
 							<ComboBoxItem>ID3v2</ComboBoxItem>
 							<ComboBoxItem>APEv2</ComboBoxItem>
@@ -254,7 +297,8 @@
 						</ComboBox>
 					</DockPanel>
 
-					<CheckBox x:Name="chkPadding" Grid.Row="3" IsChecked="True" VerticalAlignment="Center" Margin="10 5 0 5">Enable data padding when writing ID3v2</CheckBox>
+					<CheckBox Name="chkPadding" Grid.Row="3" IsChecked="True"
+							  VerticalAlignment="Center" Margin="10 5 0 5">Enable data padding when writing ID3v2</CheckBox>
 				</Grid>
 			</GroupBox>
 			
@@ -263,7 +307,7 @@
 
 
 		<!-- The place to display cover art and streaming information -->
-		<Grid Grid.Column="2" Grid.Row = "1">
+		<Grid Grid.Column="2" Grid.Row="1">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="240"/>
 				<RowDefinition/>
@@ -271,10 +315,12 @@
 
 			<!-- Art -->
 			<StackPanel Grid.Row="0">
-				<Image x:Name="imgCover" Height="200" AllowDrop="True" Drop="CoverArtDrop"/>
-				<UniformGrid x:Name="gridArt" IsEnabled="False" Rows="1" Columns="2" Height="40">
-					<Button x:Name="btnChoose" Click="ImageOpen">Choose Art</Button>
-					<Button x:Name="btnDelArt">Delete Art</Button>
+				<Image Name="imgCover" Height="200" AllowDrop="True"
+					   Drop="CoverArtDrop"/>
+				<UniformGrid Name="gridArt" IsEnabled="False" Rows="1"
+							 Columns="2" Height="40">
+					<Button Name="btnChoose" Click="ImageOpen">Choose Art</Button>
+					<Button Name="btnDelArt">Delete Art</Button>
 				</UniformGrid>
 			</StackPanel>
 
@@ -295,54 +341,57 @@
 						<Setter Property="TextAlignment" Value="Center"/>
 						<Setter Property="VerticalAlignment" Value="Center"/>
 						<Setter Property="Width" Value="80"/>
+						<Setter Property="DockPanel.Dock" Value="Left"/>
 					</Style>
 					
 					<Style TargetType="TextBox">
 						<Setter Property="HorizontalAlignment" Value="Stretch"/>
 						<Setter Property="VerticalAlignment" Value="Center"/>
 						<Setter Property="Margin" Value="10 5 10 5"/>
+						<Setter Property="DockPanel.Dock" Value="Right"/>
 					</Style>
 				</Grid.Resources>
 
 				<DockPanel Grid.Row="0">
 					<TextBlock>Encoding</TextBlock>
-					<TextBox x:Name="txtEncode"/>
+					<TextBox Name="txtEncode"/>
 				</DockPanel>
 
 				<DockPanel Grid.Row="1">
 					<TextBlock>Channel</TextBlock>
-					<TextBox x:Name="txtChannel"/>
+					<TextBox Name="txtChannel"/>
 				</DockPanel>
 				
 				<DockPanel Grid.Row="2">
 					<TextBlock>Sample Rate</TextBlock>
-					<TextBox x:Name="txtSampleRate"/>
+					<TextBox Name="txtSampleRate"/>
 				</DockPanel>
 				
 				<DockPanel Grid.Row="3">
 					<TextBlock>Bits</TextBlock>
-					<TextBox x:Name="txtBits"/>
+					<TextBox Name="txtBits"/>
 				</DockPanel>
 				
 				<DockPanel Grid.Row="4">
 					<TextBlock>Bit rate</TextBlock>
-					<TextBox x:Name="txtBitRate"/>
+					<TextBox Name="txtBitRate"/>
 				</DockPanel>
 				
 				<DockPanel Grid.Row="5">
 					<TextBlock>Length</TextBlock>
-					<TextBox x:Name="txtLength"/>
+					<TextBox Name="txtLength"/>
 				</DockPanel>
 
 				<DockPanel Grid.Row="6">
 					<TextBlock>Gain</TextBlock>
-					<TextBox x:Name="txtGain"/>
+					<TextBox Name="txtGain"/>
 				</DockPanel>
 			</Grid>
 		</Grid>
 
 		<!-- Buttons at the Property part -->
-		<Grid x:Name="SongOptions" IsEnabled="False" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="2">
+		<Grid x:Name="SongOptions" IsEnabled="False" Grid.Column="1"
+			  Grid.ColumnSpan="2" Grid.Row="2">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition/>
 				<ColumnDefinition/>
@@ -352,13 +401,13 @@
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 
-			<Button x:Name = "btnFormer" Grid.Column="0">Previous Song</Button>
-			<Button x:Name = "btnLatter" Grid.Column="1">Next Song</Button>
-			<Button x:Name = "btnReread" Grid.Column="2">Reload Song</Button>
-			<Button x:Name = "btnMore" Grid.Column="3" Click="ButtonClicked">More Info</Button>
-			<Button x:Name = "btnEdit" Click='ButtonClicked' Grid.Column="4">Edit Tag</Button> <!-- Can be changed to Save info -->
-			<Button x:Name = "btnConvert" Grid.Column="5" Click="ButtonClicked">Convert</Button>
+			<Button Name="btnFormer" Grid.Column="0">Previous Song</Button>
+			<Button Name="btnLatter" Grid.Column="1">Next Song</Button>
+			<Button Name="btnReread" Grid.Column="2">Reload Song</Button>
+			<Button Name="btnMore" Grid.Column="3" Click="ButtonClicked">More Info</Button>
+			<Button Name="btnEdit" Click='ButtonClicked' Grid.Column="4">Edit Tag</Button>
+			<!-- Can be changed to Save info -->
+			<Button Name="btnConvert" Grid.Column="5" Click="ButtonClicked">Convert</Button>
 		</Grid>
-
 	</Grid>
 </Window>

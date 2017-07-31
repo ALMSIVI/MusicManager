@@ -10,7 +10,7 @@ namespace MusicManager.Music {
       base(musicName, windowController) {
       encoding = "MPEG 1 Layer 3";
       bits = 16; // For MP3 there is no such thing as bits
-      // TODO: Resolve encoding not fit issue
+      Format = "MP3 " + (sampleRate / 1000) + "KHz " + bitRate + "K";
       // TODO: There is a bug with VBR tag.
       UpdateTag();
     }
@@ -18,13 +18,13 @@ namespace MusicManager.Music {
     /* Three tags for MP3 */
     private void LoadId3V1() {
       Tag tag = tagFile.GetTag(TagTypes.Id3v1);
-      title = tag.Title == null ? String.Empty : tag.Title;
-      artist = String.Join(",", tag.Performers);
-      album = tag.Album == null ? String.Empty : tag.Album;
-      year = tag.Year;
-      comment = tag.Comment == null ? String.Empty : tag.Comment;
-      trackNo = tag.Track;
-      genre = String.Join(",", tag.Genres);
+      Title = tag.Title == null ? String.Empty : tag.Title;
+      Artist = String.Join(",", tag.Performers);
+      Album = tag.Album == null ? String.Empty : tag.Album;
+      Year = tag.Year;
+      Comment = tag.Comment == null ? String.Empty : tag.Comment;
+      TrackNo = tag.Track;
+      Genre = String.Join(",", tag.Genres);
     }
     private void LoadId3V2() { }
     private void LoadApeV2() { }
