@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MusicManager {
+namespace MusicManager.Utils {
   /// <summary>
   /// Represents the value to be displayed in a TextBox.
   /// </summary>

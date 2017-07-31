@@ -95,7 +95,8 @@
     <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TextValue.cs" />
+    <Compile Include="Utils\DragSelectionHelper.cs" />
+    <Compile Include="Utils\TextValue.cs" />
     <Page Include="About.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -210,8 +211,6 @@
     </Content>
     <Resource Include="ManagerMain.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Utils\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

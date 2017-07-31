@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MusicManager"
+		xmlns:utils="clr-namespace:MusicManager.Utils"
         mc:Ignorable="d"
         Title="MusicManager" Height="540" Width="960">
 
@@ -67,7 +68,7 @@
 			</Grid.RowDefinitions>
 
 			<Border Grid.Row="0" BorderBrush="Black" BorderThickness="0 0 0 1">
-				<TextBlock FontSize="30" Margin="10 5 0 5">MusicManager</TextBlock>
+				<ScrollViewer VerticalScrollBarVisibility="Hidden" FontSize="30" Margin="10 5 0 5">MusicManager</ScrollViewer>
 			</Border>
 
 			<Border Grid.Row="1" BorderBrush="Black" BorderThickness="0 0 0 1">
@@ -114,9 +115,27 @@
 			</Grid>
 
 			<ListBox Name="playlist" AllowDrop="True" Drop="MusicDrop"
-					 SelectionMode="Extended" Grid.Row="3">
+					 utils:DragSelectionHelper.IsDragSelectionEnabled="true"
+					 Grid.Row="3">
 				<ListBox.ItemContainerStyle>
 					<Style TargetType="ListBoxItem">
+						<Style.Triggers>
+							<Trigger Property="ListBoxItem.IsMouseOver" Value="True">
+								<Setter Property="utils:DragSelectionHelper.IsDragSelecting" Value="True" />
+							</Trigger>
+					
+							<Trigger Property="Name" Value="defaultItem">
+								<Setter Property="ToolTip" 
+										Value="Drag or Open music files to the list..."/>
+								<Setter Property="ContextMenu">
+									<Setter.Value>
+										<ContextMenu IsEnabled="False" Visibility="Hidden"/>
+									</Setter.Value>
+								</Setter>
+							</Trigger>
+						</Style.Triggers>
+
+						<Setter Property="utils:DragSelectionHelper.IsDragSelecting" Value="False" />
 						<Setter Property="ToolTip">
 							<Setter.Value>
 								<StackPanel>
@@ -129,10 +148,26 @@
 								</StackPanel>
 							</Setter.Value>
 						</Setter>
+						
+						<Setter Property="ContextMenu">
+							<Setter.Value>
+								<ContextMenu>
+									<MenuItem Header="Remove from list"
+											  Command="ApplicationCommands.Delete"/>
+								</ContextMenu>
+							</Setter.Value>
+						</Setter>
 					</Style>
 				</ListBox.ItemContainerStyle>
-				
-				<ListBoxItem Name="defaultItem" Content="Drag or Open..." ToolTip="Drag or Open music file..."/>
+
+				<ListBox.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="Add Music" Command="ApplicationCommands.Open"
+								  CommandTarget="{Binding Path=PlacementTarget,RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+					</ContextMenu>
+				</ListBox.ContextMenu>
+
+				<ListBoxItem Name="defaultItem" Content="Drag or Open..."/>
 			</ListBox>
 
 			<Border BorderThickness="0 0 1 0" BorderBrush="Black"

@@ -4,9 +4,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Win32;
+using System.Windows.Media;
 
 using MusicManager.Music;
-using System.Windows.Media;
+using MusicManager.Utils;
 
 namespace MusicManager {
   /// <summary>
@@ -221,6 +222,7 @@ namespace MusicManager {
     /// <param name="target"></param>
     /// <param name="e"></param>
     private void DeleteExecuted(object target, ExecutedRoutedEventArgs e) {
+      int selectedIndex = playlist.SelectedIndex;
       if (!playlist.SelectedItems.Contains(defaultItem)) {
         while (playlist.SelectedItems.Count != 0) {
           RemoveInfo((MusicFile)playlist.SelectedItem);
@@ -234,6 +236,8 @@ namespace MusicManager {
           CleanInfo();
         }
         DisplayInfo();
+        playlist.SelectedIndex = selectedIndex >= playlist.Items.Count ? 
+          playlist.Items.Count - 1 : selectedIndex;
       }
     }
     #endregion
