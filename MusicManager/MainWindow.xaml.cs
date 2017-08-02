@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Win32;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
+
 
 using MusicManager.Music;
 using MusicManager.Utils;
+
 
 namespace MusicManager {
   /// <summary>
@@ -80,6 +83,10 @@ namespace MusicManager {
     /// Stores all the TextBox-TextValue pairs that represent the file section.
     /// </summary>
     private Dictionary<TextBox, TextValue> streamValues;
+    #endregion
+
+    #region Musicplay
+    private MusicFile playingMusic;
     #endregion
 
     #region Constructor
@@ -242,6 +249,75 @@ namespace MusicManager {
     }
     #endregion
 
+    #region Animation
+    private void UpdateHeaderInfo() {
+      infoTitle.Text = "Title: " + playingMusic.Title;
+      infoArtist.Text = "Artist: " + playingMusic.Artist;
+      infoAlbum.Text = "Album: " + playingMusic.Album;
+      infoFormat.Text = "Format: " + playingMusic.Format;
+      infoLength.Text = "Length: " + playingMusic.GetShortLength();
+    }
+
+    private void HeaderAnimate() {
+      UpdateHeaderInfo();
+      // TODO: Stop these animations when the list is empty again.
+      //Duration scrollDuration = new Duration(new TimeSpan(0, 0, 5));
+      DoubleAnimation titleAnimation = new DoubleAnimation() {
+        From = 0,
+        To = -50,
+        BeginTime = new TimeSpan(0, 0, 5),
+        Duration = new Duration(new TimeSpan(0, 0, 5))
+      };
+      Storyboard.SetTargetName(titleAnimation, panelHeader.Name);
+      Storyboard.SetTargetProperty(titleAnimation, new PropertyPath(Canvas.TopProperty));
+
+      DoubleAnimation artistAnimation = new DoubleAnimation() {
+        From = -50,
+        To = -100,
+        BeginTime = new TimeSpan(0, 0, 15),
+        Duration = new Duration(new TimeSpan(0, 0, 5))
+      };
+      Storyboard.SetTargetName(artistAnimation, panelHeader.Name);
+      Storyboard.SetTargetProperty(artistAnimation, new PropertyPath(Canvas.TopProperty));
+
+      DoubleAnimation albumAnimation = new DoubleAnimation() {
+        From = -100,
+        To = -150,
+        BeginTime = new TimeSpan(0, 0, 25),
+        Duration = new Duration(new TimeSpan(0, 0, 5))
+      };
+      Storyboard.SetTargetName(albumAnimation, panelHeader.Name);
+      Storyboard.SetTargetProperty(albumAnimation, new PropertyPath(Canvas.TopProperty));
+
+      DoubleAnimation formatAnimation = new DoubleAnimation() {
+        From = -150,
+        To = -200,
+        BeginTime = new TimeSpan(0, 0, 35),
+        Duration = new Duration(new TimeSpan(0, 0, 5))
+      };
+      Storyboard.SetTargetName(formatAnimation, panelHeader.Name);
+      Storyboard.SetTargetProperty(formatAnimation, new PropertyPath(Canvas.TopProperty));
+
+      DoubleAnimation lengthAnimation = new DoubleAnimation() {
+        From = -200,
+        To = -250,
+        BeginTime = new TimeSpan(0, 0, 45),
+        Duration = new Duration(new TimeSpan(0, 0, 5))
+      };
+      Storyboard.SetTargetName(lengthAnimation, panelHeader.Name);
+      Storyboard.SetTargetProperty(lengthAnimation, new PropertyPath(Canvas.TopProperty));
+
+      Storyboard headerBoard = new Storyboard();
+      headerBoard.Children.Add(titleAnimation);
+      headerBoard.Children.Add(artistAnimation);
+      headerBoard.Children.Add(albumAnimation);
+      headerBoard.Children.Add(formatAnimation);
+      headerBoard.Children.Add(lengthAnimation);
+      headerBoard.RepeatBehavior = RepeatBehavior.Forever;
+      headerBoard.Begin(this, true);
+    }
+    #endregion
+
     #region Helper methods
     /// <summary>
     /// Opens each music file by setting up the MusicFile objects.
@@ -249,10 +325,17 @@ namespace MusicManager {
     /// </summary>
     /// <param name="filenames">an array of music filenames</param>
     private void HandleOpen(string[] filenames) {
+      // First var to determine selected index after adding music
+      int selectedIndex = playlist.SelectedIndex == -1 ?
+        playlist.Items.Count - 1 : playlist.SelectedIndex;
+
       playlist.Items.Remove(defaultItem);
-      // This is the list to be updated in tag info
+
+      // Second var to determine selected index after adding music
+      bool isEmpty = playlist.Items.IsEmpty;
 
       bool canEdit = true;
+
       /* Parse the filenames */
       foreach (string filename in filenames) {
         /* Check repeated adding */
@@ -287,6 +370,14 @@ namespace MusicManager {
       }
 
       DisplayInfo();
+
+      // Determine selected index and playing item
+      playlist.SelectedIndex = (selectedIndex + 1 >= playlist.Items.Count ||
+        isEmpty) ? selectedIndex : selectedIndex + 1;
+      if (isEmpty) {
+        playingMusic = (MusicFile)(playlist.SelectedItem);
+        HeaderAnimate();
+      }
 
       if (canEdit) {
         SongOptions.IsEnabled = true;

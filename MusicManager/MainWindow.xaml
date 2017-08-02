@@ -57,9 +57,9 @@
 				<MenuItem Name="menuSettings" Header="Settings" Click="MenuClicked"/>
 			</MenuItem>
 		</Menu>
-		
+
 		<!-- The place to control music play, open / drag music to list -->
-		<Grid Grid.Column="0" Grid.Row="1">
+		<Grid Name="gridPlayer" Grid.Column="0" Grid.Row="1">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="50"/>
 				<RowDefinition Height="60"/>
@@ -67,22 +67,46 @@
 				<RowDefinition/>
 			</Grid.RowDefinitions>
 
-			<Border Grid.Row="0" BorderBrush="Black" BorderThickness="0 0 0 1">
-				<ScrollViewer VerticalScrollBarVisibility="Hidden" FontSize="30" Margin="10 5 0 5">MusicManager</ScrollViewer>
-			</Border>
+			<Canvas Grid.Row="0" ClipToBounds="True">
+				<StackPanel Name="panelHeader">
+					<StackPanel.Resources>
+						<Style TargetType="TextBlock">
+							<Setter Property="FontSize" Value="30"/>
+							<Setter Property="Height" Value="50"/>
+							<Setter Property="Width"
+									Value="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"/>
+						</Style>
+					</StackPanel.Resources>
+					
+					<TextBlock Name="infoTitle">MusicManager</TextBlock>
+					<TextBlock Name="infoArtist">Test 1</TextBlock>
+					<TextBlock Name="infoAlbum">Test 2</TextBlock>
+					<TextBlock Name="infoFormat">Test 3</TextBlock>
+					<TextBlock Name="infoLength">Test 4</TextBlock>
+				</StackPanel>
+			</Canvas>
+			<Border Grid.Row="0" BorderBrush="Black" BorderThickness="0 0 0 1"/>
 
-			<Border Grid.Row="1" BorderBrush="Black" BorderThickness="0 0 0 1">
-				<DockPanel>
-					<TextBlock DockPanel.Dock="Right" FontSize="30"
+			<DockPanel Grid.Row="1">
+				<StackPanel DockPanel.Dock="Right">
+					<TextBlock  FontSize="20"
 							   VerticalAlignment="Top"
 							   HorizontalAlignment="Right"
-							   Margin="0 0 5 0">00:00</TextBlock>
-					<Slider Name="progressSlider" Margin="10 0 0 0"
+							   Margin="0 0 5 0"
+							   TextWrapping="Wrap">00:00</TextBlock>
+					<TextBlock  FontSize="25"
+							   VerticalAlignment="Top"
+							   HorizontalAlignment="Right"
+							   Margin="0 0 5 0"
+							   TextWrapping="Wrap">00:00</TextBlock>
+				</StackPanel>
+
+				<Slider Name="progressSlider" Margin="10 0 0 0"
 							VerticalAlignment="Center"
 							HorizontalAlignment="Stretch"
 							IsMoveToPointEnabled="True"/>
-				</DockPanel>
-			</Border>
+			</DockPanel>
+			<Border Grid.Row="1" BorderBrush="Black" BorderThickness="0 0 0 1"/>
 
 			<!-- Play buttons -->
 			<Grid Grid.Row="2">
@@ -123,7 +147,7 @@
 							<Trigger Property="ListBoxItem.IsMouseOver" Value="True">
 								<Setter Property="utils:DragSelectionHelper.IsDragSelecting" Value="True" />
 							</Trigger>
-					
+
 							<Trigger Property="Name" Value="defaultItem">
 								<Setter Property="ToolTip" 
 										Value="Drag or Open music files to the list..."/>
@@ -148,7 +172,7 @@
 								</StackPanel>
 							</Setter.Value>
 						</Setter>
-						
+
 						<Setter Property="ContextMenu">
 							<Setter.Value>
 								<ContextMenu>
@@ -201,18 +225,18 @@
 					<Setter Property="Margin" Value="10 5 0 5"/>
 					<Setter Property="VerticalAlignment" Value="Center"/>
 				</Style>
-				
+
 				<Style TargetType="TextBox">
 					<Setter Property="Margin" Value="10 5 10 5"/>
 					<Setter Property="VerticalAlignment" Value="Center"/>
 				</Style>
-				
+
 				<Style TargetType="ComboBox">
 					<Setter Property="Margin" Value="5"/>
 					<Setter Property="VerticalAlignment" Value="Center"/>
 				</Style>
 			</Grid.Resources>
-			
+
 			<GroupBox Name="gridFile" Grid.Row="0" Header="File" Margin="5">
 				<DockPanel>
 					<TextBlock DockPanel.Dock="Left">Filename</TextBlock>
@@ -336,7 +360,7 @@
 							  VerticalAlignment="Center" Margin="10 5 0 5">Enable data padding when writing ID3v2</CheckBox>
 				</Grid>
 			</GroupBox>
-			
+
 			<Border BorderThickness="0 0 1 0" BorderBrush="Black" Grid.RowSpan="9"/>
 		</Grid>
 
@@ -378,7 +402,7 @@
 						<Setter Property="Width" Value="80"/>
 						<Setter Property="DockPanel.Dock" Value="Left"/>
 					</Style>
-					
+
 					<Style TargetType="TextBox">
 						<Setter Property="HorizontalAlignment" Value="Stretch"/>
 						<Setter Property="VerticalAlignment" Value="Center"/>
@@ -396,22 +420,22 @@
 					<TextBlock>Channel</TextBlock>
 					<TextBox Name="txtChannel"/>
 				</DockPanel>
-				
+
 				<DockPanel Grid.Row="2">
 					<TextBlock>Sample Rate</TextBlock>
 					<TextBox Name="txtSampleRate"/>
 				</DockPanel>
-				
+
 				<DockPanel Grid.Row="3">
 					<TextBlock>Bits</TextBlock>
 					<TextBox Name="txtBits"/>
 				</DockPanel>
-				
+
 				<DockPanel Grid.Row="4">
 					<TextBlock>Bit rate</TextBlock>
 					<TextBox Name="txtBitRate"/>
 				</DockPanel>
-				
+
 				<DockPanel Grid.Row="5">
 					<TextBlock>Length</TextBlock>
 					<TextBox Name="txtLength"/>

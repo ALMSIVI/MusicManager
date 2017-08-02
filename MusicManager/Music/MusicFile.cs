@@ -120,6 +120,17 @@ namespace MusicManager.Music {
       Comment = newInfo["comment"];
     }
 
+    public string GetShortLength() {
+      if (length.Hours == 0) {
+        if (length.Minutes < 10) {
+          return length.ToString(@"m\:ss");
+        } else {
+          return length.ToString(@"mm\:ss");
+        }
+      } else {
+        return length.ToString(@"hh\:mm\:ss");
+      }
+  }
     #endregion
 
     #region Override methods
