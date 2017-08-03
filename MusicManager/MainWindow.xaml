@@ -67,22 +67,22 @@
 				<RowDefinition/>
 			</Grid.RowDefinitions>
 
-			<Canvas Grid.Row="0" ClipToBounds="True">
+			<Canvas Name="canvasHeader" Grid.Row="0" ClipToBounds="True">
 				<StackPanel Name="panelHeader">
 					<StackPanel.Resources>
 						<Style TargetType="TextBlock">
 							<Setter Property="FontSize" Value="30"/>
 							<Setter Property="Height" Value="50"/>
-							<Setter Property="Width"
-									Value="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"/>
+							<Setter Property="VerticalAlignment" Value="Center"/>
+							<Setter Property="Margin" Value="10 0"/>
 						</Style>
 					</StackPanel.Resources>
-					
+
 					<TextBlock Name="infoTitle">MusicManager</TextBlock>
-					<TextBlock Name="infoArtist">Test 1</TextBlock>
-					<TextBlock Name="infoAlbum">Test 2</TextBlock>
-					<TextBlock Name="infoFormat">Test 3</TextBlock>
-					<TextBlock Name="infoLength">Test 4</TextBlock>
+					<TextBlock Name="infoArtist"/>
+					<TextBlock Name="infoAlbum"/>
+					<TextBlock Name="infoFormat"/>
+					<TextBlock Name="infoLength"/>
 				</StackPanel>
 			</Canvas>
 			<Border Grid.Row="0" BorderBrush="Black" BorderThickness="0 0 0 1"/>
@@ -177,7 +177,8 @@
 							<Setter.Value>
 								<ContextMenu>
 									<MenuItem Header="Remove from list"
-											  Command="ApplicationCommands.Delete"/>
+											  Command="ApplicationCommands.Delete"
+											  CommandTarget="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
 								</ContextMenu>
 							</Setter.Value>
 						</Setter>
@@ -187,7 +188,7 @@
 				<ListBox.ContextMenu>
 					<ContextMenu>
 						<MenuItem Header="Add Music" Command="ApplicationCommands.Open"
-								  CommandTarget="{Binding Path=PlacementTarget,RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"/>
+								  CommandTarget="{Binding Path=PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
 					</ContextMenu>
 				</ListBox.ContextMenu>
 

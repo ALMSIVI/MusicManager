@@ -87,6 +87,7 @@ namespace MusicManager {
 
     #region Musicplay
     private MusicFile playingMusic;
+    private Storyboard headerBoard = new Storyboard(); // header animation
     #endregion
 
     #region Constructor
@@ -241,6 +242,10 @@ namespace MusicManager {
           playlist.Items.Add(defaultItem);
           SongOptions.IsEnabled = false;
           CleanInfo();
+
+          // Clears the header marquee
+          headerBoard.Stop(this);
+          infoTitle.Text = "MusicManager";
         }
         DisplayInfo();
         playlist.SelectedIndex = selectedIndex >= playlist.Items.Count ? 
@@ -250,69 +255,95 @@ namespace MusicManager {
     #endregion
 
     #region Animation
-    private void UpdateHeaderInfo() {
+    /// <summary>
+    /// Handles the header marquee displaying song information.
+    /// </summary>
+    private void HeaderAnimate() {
+      // Update header info
+      headerBoard.Children.Clear();
       infoTitle.Text = "Title: " + playingMusic.Title;
       infoArtist.Text = "Artist: " + playingMusic.Artist;
       infoAlbum.Text = "Album: " + playingMusic.Album;
       infoFormat.Text = "Format: " + playingMusic.Format;
       infoLength.Text = "Length: " + playingMusic.GetShortLength();
-    }
 
-    private void HeaderAnimate() {
-      UpdateHeaderInfo();
-      // TODO: Stop these animations when the list is empty again.
-      //Duration scrollDuration = new Duration(new TimeSpan(0, 0, 5));
-      DoubleAnimation titleAnimation = new DoubleAnimation() {
-        From = 0,
-        To = -50,
-        BeginTime = new TimeSpan(0, 0, 5),
-        Duration = new Duration(new TimeSpan(0, 0, 5))
+      Duration scrollDuration = new Duration(new TimeSpan(0, 0, 6));
+
+      Dictionary<int, TextBlock> headerTexts = new Dictionary<int, TextBlock> {
+        [0] = infoTitle,
+        [1] = infoArtist,
+        [2] = infoAlbum,
+        [3] = infoFormat,
+        [4] = infoLength
       };
-      Storyboard.SetTargetName(titleAnimation, panelHeader.Name);
-      Storyboard.SetTargetProperty(titleAnimation, new PropertyPath(Canvas.TopProperty));
 
-      DoubleAnimation artistAnimation = new DoubleAnimation() {
-        From = -50,
-        To = -100,
-        BeginTime = new TimeSpan(0, 0, 15),
-        Duration = new Duration(new TimeSpan(0, 0, 5))
-      };
-      Storyboard.SetTargetName(artistAnimation, panelHeader.Name);
-      Storyboard.SetTargetProperty(artistAnimation, new PropertyPath(Canvas.TopProperty));
+      int animationTime = 3;
 
-      DoubleAnimation albumAnimation = new DoubleAnimation() {
-        From = -100,
-        To = -150,
-        BeginTime = new TimeSpan(0, 0, 25),
-        Duration = new Duration(new TimeSpan(0, 0, 5))
-      };
-      Storyboard.SetTargetName(albumAnimation, panelHeader.Name);
-      Storyboard.SetTargetProperty(albumAnimation, new PropertyPath(Canvas.TopProperty));
+      for (int i = 0; i < 5; i++) {
+        // If the text is too long, need to do a horizontal "marquee"
+        FormattedText headerText = new FormattedText(
+          headerTexts[i].Text,
+          System.Globalization.CultureInfo.CurrentUICulture,
+          FlowDirection.LeftToRight,
+          new Typeface(headerTexts[i].FontFamily, headerTexts[i].FontStyle,
+          headerTexts[i].FontWeight, headerTexts[i].FontStretch),
 
-      DoubleAnimation formatAnimation = new DoubleAnimation() {
-        From = -150,
-        To = -200,
-        BeginTime = new TimeSpan(0, 0, 35),
-        Duration = new Duration(new TimeSpan(0, 0, 5))
-      };
-      Storyboard.SetTargetName(formatAnimation, panelHeader.Name);
-      Storyboard.SetTargetProperty(formatAnimation, new PropertyPath(Canvas.TopProperty));
+          headerTexts[i].FontSize,
+          Brushes.Black);
 
-      DoubleAnimation lengthAnimation = new DoubleAnimation() {
-        From = -200,
-        To = -250,
-        BeginTime = new TimeSpan(0, 0, 45),
-        Duration = new Duration(new TimeSpan(0, 0, 5))
-      };
-      Storyboard.SetTargetName(lengthAnimation, panelHeader.Name);
-      Storyboard.SetTargetProperty(lengthAnimation, new PropertyPath(Canvas.TopProperty));
+        double textWidth = headerText.Width + 2 * 10; // calculate the padding
+        if (textWidth > canvasHeader.ActualWidth) {
+          // 10 is the velocity
+          double secondsToScroll = (textWidth - canvasHeader.ActualWidth) / 10;
+          Duration horizontalDuration =
+            new Duration(TimeSpan.FromMilliseconds(secondsToScroll * 1000));
 
-      Storyboard headerBoard = new Storyboard();
-      headerBoard.Children.Add(titleAnimation);
-      headerBoard.Children.Add(artistAnimation);
-      headerBoard.Children.Add(albumAnimation);
-      headerBoard.Children.Add(formatAnimation);
-      headerBoard.Children.Add(lengthAnimation);
+          // Animation to scroll to the end of the text
+          DoubleAnimation horizontalAnimation = new DoubleAnimation() {
+            From = canvasHeader.ActualWidth - textWidth,
+            To = 0,
+            BeginTime = new TimeSpan(0, 0, animationTime),
+            Duration = horizontalDuration
+          };
+          Storyboard.SetTargetName(horizontalAnimation, panelHeader.Name);
+          Storyboard.SetTargetProperty(horizontalAnimation,
+            new PropertyPath(Canvas.RightProperty));
+          headerBoard.Children.Add(horizontalAnimation);
+
+          animationTime += (int)(secondsToScroll + 2);
+
+          // Animation to scroll back and restore for vertical marquee
+          DoubleAnimation restoreAnimation = new DoubleAnimation() {
+            From = 0,
+            To = canvasHeader.ActualWidth - textWidth,
+            BeginTime = new TimeSpan(0, 0, animationTime),
+            Duration = horizontalDuration
+          };
+          Storyboard.SetTargetName(restoreAnimation, panelHeader.Name);
+          Storyboard.SetTargetProperty(restoreAnimation,
+            new PropertyPath(Canvas.RightProperty));
+          headerBoard.Children.Add(restoreAnimation);
+
+          animationTime += (int)secondsToScroll;
+        }
+
+        animationTime += 3;
+
+        // Normal, vertical marquee
+        DoubleAnimation headerAnimation = new DoubleAnimation() {
+          From = i * infoTitle.ActualHeight * -1,
+          To = (i + 1) * infoTitle.ActualHeight * -1,
+          BeginTime = new TimeSpan(0, 0, animationTime),
+          Duration = scrollDuration
+        };
+        Storyboard.SetTargetName(headerAnimation, panelHeader.Name);
+        Storyboard.SetTargetProperty(headerAnimation,
+          new PropertyPath(Canvas.TopProperty));
+        headerBoard.Children.Add(headerAnimation);
+
+        animationTime += 6;
+      }
+      
       headerBoard.RepeatBehavior = RepeatBehavior.Forever;
       headerBoard.Begin(this, true);
     }
@@ -460,6 +491,5 @@ namespace MusicManager {
       }
     }
     #endregion
-
   }
 }
