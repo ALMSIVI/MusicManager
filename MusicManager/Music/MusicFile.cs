@@ -23,14 +23,16 @@ namespace MusicManager.Music {
     /// Auto property is enabled for tags, but when passing information,
     /// instead of directly using them, two methods called PassInfo() and
     /// SaveInfo(), are used to better format these data for the UI.
+    /// Also, they are all initialized, so that even when the information is not
+    /// available from the tags, there is still something to read
     /// </remarks>
-    public string Title { get; protected set; }
-    public string Album { get; protected set; }
-    public string Artist { get; protected set; }
-    public uint TrackNo { get; protected set; }
-    public string Genre { get; protected set; }
-    public uint Year { get; protected set; }
-    public string Comment { get; protected set; }
+    public string Title { get; protected set; } = String.Empty;
+    public string Album { get; protected set; } = String.Empty;
+    public string Artist { get; protected set; } = String.Empty;
+    public uint TrackNo { get; protected set; } = 0;
+    public string Genre { get; protected set; } = String.Empty;
+    public uint Year { get; protected set; } = 0;
+    public string Comment { get; protected set; } = String.Empty;
     #endregion
 
     #region Stream
@@ -103,7 +105,10 @@ namespace MusicManager.Music {
         ["sampleRate"] = sampleRate.ToString() + " Hz",
         ["bits"] = bits.ToString() + " Bits",
         ["bitRate"] = bitRate.ToString() + " Kbps",
-        ["length"] = Length
+        ["length"] = Length,
+
+        // Identifies if the music file has a cover art
+        ["hasCoverArt"] = "No"
       };
     }
 
@@ -130,7 +135,7 @@ namespace MusicManager.Music {
       } else {
         return length.ToString(@"hh\:mm\:ss");
       }
-  }
+    }
     #endregion
 
     #region Override methods

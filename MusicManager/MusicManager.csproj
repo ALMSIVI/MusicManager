@@ -92,6 +92,7 @@
     <Compile Include="Guess.xaml.cs">
       <DependentUpon>Guess.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Music\MusicFileWithArt.cs" />
     <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>

@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using TagLib;
 
 namespace MusicManager.Music {
-  public class Mp3 : MusicFile {
+  public class Mp3 : MusicFileWithArt {
     private delegate void LoadInfo();
+
+    // MP3 unique properties
+    public uint TrackCount { get; private set; } = 0;
 
     public Mp3(string musicName, MainWindow windowController) :
       base(musicName, windowController) {
@@ -18,16 +21,52 @@ namespace MusicManager.Music {
     /* Three tags for MP3 */
     private void LoadId3V1() {
       Tag tag = tagFile.GetTag(TagTypes.Id3v1);
-      Title = tag.Title == null ? String.Empty : tag.Title;
-      Artist = String.Join(",", tag.Performers);
-      Album = tag.Album == null ? String.Empty : tag.Album;
-      Year = tag.Year;
-      Comment = tag.Comment == null ? String.Empty : tag.Comment;
-      TrackNo = tag.Track;
-      Genre = String.Join(",", tag.Genres);
+      if (tag != null) {
+        Title = tag.Title == null ? Title : tag.Title;
+        Artist = String.Join(",", tag.Performers) == String.Empty ? Artist :
+          String.Join(",", tag.Performers);
+        Album = tag.Album == null ? Album : tag.Album;
+        Year = tag.Year;
+        Comment = tag.Comment == null ? Comment : tag.Comment;
+        TrackNo = tag.Track;
+        Genre = String.Join(",", tag.Genres) == String.Empty ? Genre : 
+          String.Join(",", tag.Genres);
+      }
     }
-    private void LoadId3V2() { }
-    private void LoadApeV2() { }
+
+    private void LoadId3V2() {
+      Tag tag = tagFile.GetTag(TagTypes.Id3v2);
+      if (tag != null) {
+        Title = tag.Title == null ? Title : tag.Title;
+        Artist = String.Join(",", tag.Performers) == String.Empty ? Artist :
+          String.Join(",", tag.Performers);
+        Album = tag.Album == null ? Album : tag.Album;
+        Year = tag.Year;
+        Comment = tag.Comment == null ? Comment : tag.Comment;
+        TrackNo = tag.Track;
+        Genre = String.Join(",", tag.Genres) == String.Empty ? Genre :
+          String.Join(",", tag.Genres);
+
+        // MP3 unique properties
+        TrackCount = tag.TrackCount;
+        CoverArt = tag.Pictures[0];
+      }
+    }
+
+    private void LoadApeV2() {
+      Tag tag = tagFile.GetTag(TagTypes.Ape);
+      if (tag != null) {
+        Title = tag.Title == null ? Title : tag.Title;
+        Artist = String.Join(",", tag.Performers) == String.Empty ? Artist :
+          String.Join(",", tag.Performers);
+        Album = tag.Album == null ? Album : tag.Album;
+        Year = tag.Year;
+        Comment = tag.Comment == null ? Comment : tag.Comment;
+        TrackNo = tag.Track;
+        Genre = String.Join(",", tag.Genres) == String.Empty ? Genre :
+          String.Join(",", tag.Genres);
+      }
+    }
 
     public override void UpdateTag() {
       /// <see cref="MainWindow.ReadPriority"/>
@@ -59,7 +98,10 @@ namespace MusicManager.Music {
     public override Dictionary<string, string> PassInfo() {
       // TODO: after loading ID3v2, modify track count
       // TODO: Add VBR/CBR/ABR after bitrate
-      return base.PassInfo();
+      Dictionary<string, string> information = base.PassInfo();
+      information["trackNo"] = TrackCount == 0 ? TrackNo.ToString() :
+        TrackNo + "/" + TrackCount;
+      return information;
     }
 
     public override void Pause() {
